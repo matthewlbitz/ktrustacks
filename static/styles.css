@@ -13,7 +13,11 @@ h1 {
     padding-top: 15px;
 }
 
-h6 {
+h2 {
+    color: goldenrod;
+}
+
+h5 {
     color: goldenrod;
 }
 
@@ -25,6 +29,10 @@ ul {
 li {
     padding-left: 30px;
     padding-right: 30px;
+}
+
+li:hover {
+    color: grey;
 }
 
 body {
@@ -43,4 +51,10 @@ footer {
 h6 {
     text-align: center;
     float: center;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
