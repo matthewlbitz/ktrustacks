@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="../static/styles.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="header-content">
+            <div class="logo-content">
+                <a href="/"><h1>KTRU</h1></a>
+            </div>
+
+            <div class="profile-navigation-content">
+                <div class="profile-content">
+                    <h4>Profile</h4>
+                </div>
+
+                <div class="navigation-content">
+                    <div class="dropdown">
+                        <a href="/genres"><h2>genres</h2></a>
+                        <div class="dropdown-content">
+                            {% for genre in genres %}
+                            <a href="/genres/{{ genre }}">{{ genre }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="/styles"><h2>styles</h2></a>
+                        <div class="dropdown-content">
+                            <a href="/styles/vintage">Vintage</a>
+                            <a href="/styles/modern">Modern</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="/artists"><h2>artists</h2></a>
+                        <div class="dropdown-content">
+                            <a href="/artists/a">Artist A</a>
+                            <a href="/artists/b">Artist B</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="/decades"><h2>decades</h2></a>
+                        <div class="dropdown-content">
+                            {% for decade in decades %}
+                            <a href="/decades/{{ decade }}">{{ decade }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="/the-stacks"><h2>the stacks</h2></a>
+                        <div class="dropdown-content">
+                            <a href="/the-stacks/new">New</a>
+                            <a href="/the-stacks/classic">Classic</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-content">
+                <h1>Dashboard</h1><br>
+            </div>
+
+            {% block content %} {% endblock content %}
+
+        </div>
+    </body>
+
+    <footer>
+        <div class="footer-content">
+            <h4>KTRU 96.1 | Made by Matthew Bitz</h4>
+        </div>
+    </footer>
+</html>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="section-content">
+    <div class="search-bar">
+        <form>
+            <input type="text" id="search-input" placeholder="Search decades..." />
+        </form>
+        <button id="back-to-decades-btn" style="display: none;" onclick="showDecades()">Back to Decades</button>
+    </div>
+
+    <div id="section-list">
+        <ul>
+            {% for decade in decades %}
+            <li onclick="showSongs('{{ decade }}')">{{ decade }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="songs-list" style="display: none;">
+        <ul id="songs-list-ul"></ul>
+    </div>
+</div>
+
+{% endblock content %}
