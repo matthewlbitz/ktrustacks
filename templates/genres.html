@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="section-content">
+    <div class="search-bar">
+        <form>
+            <input type="text" id="search-input" placeholder="Search genres..." />
+        </form>
+        <button id="back-to-genres-btn" style="display: none;" onclick="showGenres()">Back to Genres</button>
+    </div>
+
+    <div id="section-list">
+        <ul>
+            {% for genre in genres %}
+            <li onclick="showSongs('{{ genre }}')">{{ genre }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="songs-list" style="display: none;">
+        <ul id="songs-list-ul"></ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("search-input");
+        const genresList = document.getElementById("genres-list");
+        const genres = Array.from(genresList.querySelectorAll("li"));
+
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase();
+
+            genres.forEach((genre) => {
+                const text = genre.textContent.toLowerCase();
+                genre.style.display = text.includes(query) ? "" : "none";
+            });
+        });
+    });
+
+    function showSongs(genre) {
+        document.getElementById('section-list').style.display = 'none';
+        document.getElementById('back-to-genres-btn').style.display = 'inline-block';
+
+    }
+
+    function showGenres() {
+        document.getElementById('section-list').style.display = 'block';
+        document.getElementById('back-to-genres-btn').style.display = 'none';
+
+    }
+</script>
+
+{% endblock content %}

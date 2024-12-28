@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="section-content">
+    <div class="search-bar">
+        <form action="/search" method="GET">
+            <input type="text" name="styles" placeholder="Search styles..." />
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
