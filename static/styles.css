@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 15%;
+}
+
+.logo-content {
+    background-color: black;
+    color: goldenrod;
+    font-family: 'Courier New', monospace;
+    font-size: 40px;
+    font-weight: normal;
+    margin: 0 auto;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-navigation-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 100%;
+}
+
+.profile-content {
+    background-color: black;
+    color: goldenrod;
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+}
+
+.profile-content h4 {
+    margin: 15px;
+}
+
+.navigation-content {
+    background-color: black;
+    color: goldenrod;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: lighter;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+}
+
+.navigation-content h2 {
+    margin: 0 30px;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 75%;
+}
+
+.stacks-content pre {
+    font-size: 9px;
+    font-weight: 900;
+    color: goldenrod;
+    text-align: center;
+    -webkit-text-stroke: 0.7px goldenrod;
+}
+
+.dashboard-content {
+    background-color: black;
+    color: goldenrod;
+    font-family: 'Courier New', Times, serif;
+    font-weight: 100;
+    width: 20%;
+    height: 100%;
+    display: block;
+    text-align: center;
+}
+
+.stacks-content {
+    background-color: black;
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+footer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 10%;
+}
+
+.footer-content {
+    background-color: black; 
+    color: goldenrod;
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: end;
+}
