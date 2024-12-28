@@ -20,7 +20,7 @@
                         <a href="/genres"><h2>genres</h2></a>
                         <div class="dropdown-content">
                             {% for genre in genres %}
-                            <a href="/genres/{{ genre }}">{{ genre }}</a>
+                            <li onclick="showSongs('{{ genre }}')">{{ genre }}</li>
                             {% endfor %}
                         </div>
                     </div>
@@ -65,6 +65,79 @@
             {% block content %} {% endblock content %}
 
         </div>
+        <script>
+            function fetchSongs(genre) {
+        fetch(`/genres/${genre}`)
+            .then(response => response.json())
+            .then(data => {
+                const songsList = document.getElementById('songs-list-ul');
+                songsList.innerHTML = ''; 
+                // Apply flexbox styling to the parent container to arrange cards side by side
+                songsList.style.display = 'flex';
+                songsList.style.flexWrap = 'wrap';
+                songsList.style.gap = '10px'; // Add spacing between cards
+                songsList.style.listStyleType = 'none'; // Remove default list styling
+                songsList.style.padding = '0';
+
+                data.songs.forEach(song => {
+                    const listItem = document.createElement('li');
+                    listItem.style.display = 'flex'; // Arrange items horizontally within the card
+                    listItem.style.alignItems = 'center'; // Center content vertically
+                    listItem.style.border = '1px solid goldenrod'; // Add an outline
+                    listItem.style.borderRadius = '5px'; // Rounded corners
+                    listItem.style.padding = '10px';
+                    listItem.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'; // Subtle shadow
+                    listItem.style.backgroundColor = 'black';
+                    listItem.style.flex = '1 1 250px'; // Allow the card to grow/shrink and set a base width
+                    listItem.style.boxSizing = 'border-box'; // Ensure padding is included in width
+                    listItem.style.maxWidth = '300px'; // Limit card width
+
+                    // Add cover image
+                    const coverImage = document.createElement('img');
+                    coverImage.src = song.image || 'placeholder.jpg'; // Use a placeholder if no image
+                    coverImage.alt = `${song.title} cover`;
+                    coverImage.style.width = '60px';
+                    coverImage.style.height = '60px';
+                    coverImage.style.objectFit = 'cover';
+                    coverImage.style.marginRight = '10px';
+
+                    // Add song details
+                    const details = document.createElement('div');
+
+                    // Add title and artist
+                    const titleArtist = document.createElement('div');
+                    titleArtist.textContent = `${song.title} by ${song.artist}`;
+                    titleArtist.style.fontWeight = 'bold';
+                    titleArtist.style.marginBottom = '5px';
+
+                    // Add genre and shelf label
+                    const genreShelf = document.createElement('div');
+                    genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+                    genreShelf.style.fontSize = '0.9em';
+                    genreShelf.style.color = '#555';
+
+                    // Append details to the details container
+                    details.appendChild(titleArtist);
+                    details.appendChild(genreShelf);
+
+                    // Append image and details to the list item
+                    listItem.appendChild(coverImage);
+                    listItem.appendChild(details);
+
+                    // Append the list item to the songs list
+                    songsList.appendChild(listItem);
+                });
+
+
+
+                document.getElementById('songs-list').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching songs:', error));
+    }
+        </script>
+
+
+
     </body>
 
     <footer>
