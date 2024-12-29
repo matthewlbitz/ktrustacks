@@ -16,43 +16,11 @@
                 </div>
 
                 <div class="navigation-content">
-                    <div class="dropdown">
-                        <a href="/genres"><h2>genres</h2></a>
-                        <div class="dropdown-content">
-                            {% for genre in genres %}
-                            <li onclick="showSongs('{{ genre }}')">{{ genre }}</li>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <a href="/styles"><h2>styles</h2></a>
-                        <div class="dropdown-content">
-                            <a href="/styles/vintage">Vintage</a>
-                            <a href="/styles/modern">Modern</a>
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <a href="/artists"><h2>artists</h2></a>
-                        <div class="dropdown-content">
-                            <a href="/artists/a">Artist A</a>
-                            <a href="/artists/b">Artist B</a>
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <a href="/decades"><h2>decades</h2></a>
-                        <div class="dropdown-content">
-                            {% for decade in decades %}
-                            <a href="/decades/{{ decade }}">{{ decade }}</a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="dropdown">
-                        <a href="/the-stacks"><h2>the stacks</h2></a>
-                        <div class="dropdown-content">
-                            <a href="/the-stacks/new">New</a>
-                            <a href="/the-stacks/classic">Classic</a>
-                        </div>
-                    </div>
+                    <a href="/genres" id="genres-tab"><h2>genres</h2></a>
+                    <a href="/styles" id="styles-tab"><h2>styles</h2></a>
+                    <a href="/artists" id="artists-tab"><h2>artists</h2></a>
+                    <a href="/decades" id="decades-tab"><h2>decades</h2></a>
+                    <a href="/the-stacks" id="stacks-tab"><h2>the stacks</h2></a>
                 </div>
             </div>
         </div>
@@ -66,78 +34,295 @@
 
         </div>
         <script>
-            function fetchSongs(genre) {
-        fetch(`/genres/${genre}`)
+            function fetchSongs_genre_nav(genre) {
+            document.getElementById('section-list').style.display = 'none';
+            console.log("got element by id")
+            document.getElementById('back-to-genres-btn').style.display = 'inline-block';
+            fetch(`/genres/${genre}`)
+                .then(response => response.json())
+                .then(data => {
+                    const songsList = document.getElementById('songs-list-ul');
+                    songsList.innerHTML = ''; 
+                    // Apply flexbox styling to the parent container to arrange cards side by side
+                    songsList.style.display = 'flex';
+                    songsList.style.flexWrap = 'wrap';
+                    songsList.style.gap = '10px'; // Add spacing between cards
+                    songsList.style.listStyleType = 'none'; // Remove default list styling
+                    songsList.style.padding = '0';
+
+                    data.songs.forEach(song => {
+                        const listItem = document.createElement('li');
+                        listItem.style.display = 'flex'; // Arrange items horizontally within the card
+                        listItem.style.alignItems = 'center'; // Center content vertically
+                        listItem.style.border = '1px solid goldenrod'; // Add an outline
+                        listItem.style.borderRadius = '5px'; // Rounded corners
+                        listItem.style.padding = '10px';
+                        listItem.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'; // Subtle shadow
+                        listItem.style.backgroundColor = 'black';
+                        listItem.style.flex = '1 1 250px'; // Allow the card to grow/shrink and set a base width
+                        listItem.style.boxSizing = 'border-box'; // Ensure padding is included in width
+                        listItem.style.maxWidth = '300px'; // Limit card width
+
+                        // Add cover image
+                        const coverImage = document.createElement('img');
+                        coverImage.src = song.image || 'placeholder.jpg'; // Use a placeholder if no image
+                        coverImage.alt = `${song.title} cover`;
+                        coverImage.style.width = '60px';
+                        coverImage.style.height = '60px';
+                        coverImage.style.objectFit = 'cover';
+                        coverImage.style.marginRight = '10px';
+
+                        // Add song details
+                        const details = document.createElement('div');
+
+                        // Add title and artist
+                        const titleArtist = document.createElement('div');
+                        titleArtist.textContent = `${song.title} by ${song.artist}`;
+                        titleArtist.style.fontWeight = 'bold';
+                        titleArtist.style.marginBottom = '5px';
+
+                        // Add genre and shelf label
+                        const genreShelf = document.createElement('div');
+                        genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+                        genreShelf.style.fontSize = '0.9em';
+                        genreShelf.style.color = '#555';
+
+                        // Append details to the details container
+                        details.appendChild(titleArtist);
+                        details.appendChild(genreShelf);
+
+                        // Append image and details to the list item
+                        listItem.appendChild(coverImage);
+                        listItem.appendChild(details);
+
+                        // Append the list item to the songs list
+                        songsList.appendChild(listItem);
+                    });
+
+
+
+                    document.getElementById('songs-list').style.display = 'block';
+                })
+                .catch(error => console.error('Error fetching songs:', error));
+        }
+
+        function fetchSongs_style_nav(style) {
+        document.getElementById('section-list').style.display = 'none';
+        document.getElementById('back-to-styles-btn').style.display = 'inline-block';
+        console.log('fetching songs with style', style);
+        fetch(`/styles/${style}`)
             .then(response => response.json())
             .then(data => {
+                console.log('entered the .then');
                 const songsList = document.getElementById('songs-list-ul');
-                songsList.innerHTML = ''; 
-                // Apply flexbox styling to the parent container to arrange cards side by side
-                songsList.style.display = 'flex';
-                songsList.style.flexWrap = 'wrap';
-                songsList.style.gap = '10px'; // Add spacing between cards
-                songsList.style.listStyleType = 'none'; // Remove default list styling
-                songsList.style.padding = '0';
+                songsList.innerHTML = '';  // Clear previous songs
 
                 data.songs.forEach(song => {
                     const listItem = document.createElement('li');
-                    listItem.style.display = 'flex'; // Arrange items horizontally within the card
-                    listItem.style.alignItems = 'center'; // Center content vertically
-                    listItem.style.border = '1px solid goldenrod'; // Add an outline
-                    listItem.style.borderRadius = '5px'; // Rounded corners
-                    listItem.style.padding = '10px';
-                    listItem.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'; // Subtle shadow
-                    listItem.style.backgroundColor = 'black';
-                    listItem.style.flex = '1 1 250px'; // Allow the card to grow/shrink and set a base width
-                    listItem.style.boxSizing = 'border-box'; // Ensure padding is included in width
-                    listItem.style.maxWidth = '300px'; // Limit card width
-
-                    // Add cover image
+                    console.log('created list item');
+                    // Create cover image
                     const coverImage = document.createElement('img');
-                    coverImage.src = song.image || 'placeholder.jpg'; // Use a placeholder if no image
+                    coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
                     coverImage.alt = `${song.title} cover`;
-                    coverImage.style.width = '60px';
-                    coverImage.style.height = '60px';
-                    coverImage.style.objectFit = 'cover';
-                    coverImage.style.marginRight = '10px';
 
-                    // Add song details
+                    // Create song details container
                     const details = document.createElement('div');
 
-                    // Add title and artist
+                    // Title and artist
                     const titleArtist = document.createElement('div');
+                    titleArtist.classList.add('title-artist');
                     titleArtist.textContent = `${song.title} by ${song.artist}`;
-                    titleArtist.style.fontWeight = 'bold';
-                    titleArtist.style.marginBottom = '5px';
 
-                    // Add genre and shelf label
+                    // Genre and shelf info
                     const genreShelf = document.createElement('div');
+                    genreShelf.classList.add('style-shelf');
                     genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
-                    genreShelf.style.fontSize = '0.9em';
-                    genreShelf.style.color = '#555';
 
-                    // Append details to the details container
+                    // Append details to details container
                     details.appendChild(titleArtist);
                     details.appendChild(genreShelf);
 
-                    // Append image and details to the list item
+                    // Append image and details to list item
                     listItem.appendChild(coverImage);
                     listItem.appendChild(details);
 
-                    // Append the list item to the songs list
+                    // Append list item to songs list
                     songsList.appendChild(listItem);
                 });
-
-
 
                 document.getElementById('songs-list').style.display = 'block';
             })
             .catch(error => console.error('Error fetching songs:', error));
     }
+
+    function fetchSongs_artist_nav(artist) {
+    document.getElementById('section-list').style.display = 'none';
+    document.getElementById('back-to-artists-btn').style.display = 'inline-block';
+    console.log('fetching songs with artist', artist);
+    fetch(`/artists/${artist}`)
+        .then(response => response.json())
+        .then(data => {
+            const songsList = document.getElementById('songs-list-ul');
+            songsList.innerHTML = '';  // Clear previous songs
+
+            data.songs.forEach(song => {
+                const listItem = document.createElement('li');
+                console.log('created list item', listItem);
+
+                // Create cover image
+                const coverImage = document.createElement('img');
+                coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                coverImage.alt = `${song.title} cover`;
+
+                // Create song details container
+                const details = document.createElement('div');
+
+                // Title and artist
+                const titleArtist = document.createElement('div');
+                titleArtist.classList.add('title-artist');
+                titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                // Genre and shelf info
+                const genreShelf = document.createElement('div');
+                genreShelf.classList.add('genre-shelf');
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+
+                // Append details to details container
+                details.appendChild(titleArtist);
+                details.appendChild(genreShelf);
+
+                // Append image and details to list item
+                listItem.appendChild(coverImage);
+                listItem.appendChild(details);
+
+                // Append list item to songs list
+                songsList.appendChild(listItem);
+            });
+
+            document.getElementById('songs-list').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching songs:', error));
+    }
+
+    function fetchSongs_decade_nav(decade) {
+    document.getElementById('section-list').style.display = 'none';
+    document.getElementById('back-to-decades-btn').style.display = 'inline-block';
+    console.log('fetching songs with decade', decade);
+    fetch(`/decades/${decade}`)
+        .then(response => response.json())
+        .then(data => {
+            const songsList = document.getElementById('songs-list-ul');
+            songsList.innerHTML = '';  // Clear previous songs
+
+            data.songs.forEach(song => {
+                const listItem = document.createElement('li');
+                console.log('created list item', listItem);
+
+                // Create cover image
+                const coverImage = document.createElement('img');
+                coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                coverImage.alt = `${song.title} cover`;
+
+                // Create song details container
+                const details = document.createElement('div');
+
+                // Title and artist
+                const titleArtist = document.createElement('div');
+                titleArtist.classList.add('title-artist');
+                titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                // Genre and shelf info
+                const genreShelf = document.createElement('div');
+                genreShelf.classList.add('genre-shelf');
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+
+                // Append details to details container
+                details.appendChild(titleArtist);
+                details.appendChild(genreShelf);
+
+                // Append image and details to list item
+                listItem.appendChild(coverImage);
+                listItem.appendChild(details);
+
+                // Append list item to songs list
+                songsList.appendChild(listItem);
+            });
+
+            document.getElementById('songs-list').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching songs:', error));
+    }
+
+    function fetchSongs_stack_nav(stack) {
+    document.getElementById('section-list').style.display = 'none';
+    document.getElementById('back-to-stacks-btn').style.display = 'inline-block';
+    console.log('fetching songs with stack', stack);
+    fetch(`/the-stacks/${stack}`)
+        .then(response => response.json())
+        .then(data => {
+            const songsList = document.getElementById('songs-list-ul');
+            songsList.innerHTML = '';  // Clear previous songs
+
+            data.songs.forEach(song => {
+                const listItem = document.createElement('li');
+                console.log('created list item', listItem);
+
+                // Create cover image
+                const coverImage = document.createElement('img');
+                coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                coverImage.alt = `${song.title} cover`;
+
+                // Create song details container
+                const details = document.createElement('div');
+
+                // Title and artist
+                const titleArtist = document.createElement('div');
+                titleArtist.classList.add('title-artist');
+                titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                // Genre and shelf info
+                const genreShelf = document.createElement('div');
+                genreShelf.classList.add('genre-shelf');
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+
+                // Append details to details container
+                details.appendChild(titleArtist);
+                details.appendChild(genreShelf);
+
+                // Append image and details to list item
+                listItem.appendChild(coverImage);
+                listItem.appendChild(details);
+
+                // Append list item to songs list
+                songsList.appendChild(listItem);
+            });
+
+            document.getElementById('songs-list').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching songs:', error));
+    }
+
+    function showGenres() {
+        document.getElementById('section-list').style.display = 'block';
+        document.getElementById('back-to-genres-btn').style.display = 'none';
+        document.getElementById('songs-list').style.display = 'none';
+    }
+
+    window.onload = function() {
+        var currentPath = window.location.pathname; // Get the current path
+        if (currentPath === '/genres') {
+            document.getElementById('genres-tab').classList.add('active');
+        } else if (currentPath === '/styles') {
+            document.getElementById('styles-tab').classList.add('active');
+        } else if (currentPath === '/artists') {
+            document.getElementById('artists-tab').classList.add('active');
+        } else if (currentPath === '/decades') {
+            document.getElementById('decades-tab').classList.add('active');
+        } else if (currentPath === '/the-stacks') {
+            document.getElementById('stacks-tab').classList.add('active');
+        }
+}
         </script>
-
-
-
     </body>
 
     <footer>

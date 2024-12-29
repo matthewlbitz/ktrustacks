@@ -46,11 +46,13 @@
     function showSongs(genre) {
         document.getElementById('section-list').style.display = 'none';
         document.getElementById('back-to-genres-btn').style.display = 'inline-block';
-
-        fetchSongs(genre);
+        console.log("entering showSongs")
+        fetchSongs_genre(genre);
+        console.log("finished fetchSongs_genre")
     }
 
-    function fetchSongs(genre) {
+    function fetchSongs_genre(genre) {
+    console.log("entering fetchsongs")
     fetch(`/genres/${genre}`)
         .then(response => response.json())
         .then(data => {
@@ -94,7 +96,6 @@
         })
         .catch(error => console.error('Error fetching songs:', error));
 }
-
 
     function showGenres() {
         document.getElementById('section-list').style.display = 'block';

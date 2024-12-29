@@ -4,10 +4,107 @@
 
 <div class="section-content">
     <div class="search-bar">
-        <form action="/search" method="GET">
-            <input type="text" name="styles" placeholder="Search styles..." />
+        <form>
+            <input type="text" id="search-input" placeholder="Search styles..." />
         </form>
+        <button id="back-to-styles-btn" style="display: none;" onclick="showStyles()">Back to Styles</button>
+    </div>
+
+    <div id="section-list">
+        <ul id="styles-list">
+            {% for style in styles %}
+            <li onclick="showSongs('{{ style }}')">{{ style }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="songs-list" style="display: none;">
+        <ul id="songs-list-ul">
+            {% for song in songs %}
+            <li>{{ song.title }} by {{ song.artist }}</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("search-input");
+        const stylesList = document.getElementById("styles-list");
+        const styles = Array.from(stylesList.querySelectorAll("li"));
+        
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase();
+
+            styles.forEach((style) => {
+                const text = style.textContent.toLowerCase();
+                style.style.display = text.includes(query) ? "" : "none";
+            });
+        });
+    });
+
+    function showSongs(style) {
+        document.getElementById('section-list').style.display = 'none';
+        document.getElementById('back-to-styles-btn').style.display = 'inline-block';
+        console.log('entered showSongs()')
+
+        fetchSongs_style(style);
+        console.log('finished executing fetchSongs')
+    }
+
+    function fetchSongs_style(style) {
+    console.log('fetching songs with style', style);
+    fetch(`/styles/${style}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('entered the .then');
+            const songsList = document.getElementById('songs-list-ul');
+            songsList.innerHTML = '';  // Clear previous songs
+
+            data.songs.forEach(song => {
+                const listItem = document.createElement('li');
+                console.log('created list item');
+                // Create cover image
+                const coverImage = document.createElement('img');
+                coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                coverImage.alt = `${song.title} cover`;
+
+                // Create song details container
+                const details = document.createElement('div');
+
+                // Title and artist
+                const titleArtist = document.createElement('div');
+                titleArtist.classList.add('title-artist');
+                titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                // Genre and shelf info
+                const genreShelf = document.createElement('div');
+                genreShelf.classList.add('style-shelf');
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+
+                // Append details to details container
+                details.appendChild(titleArtist);
+                details.appendChild(genreShelf);
+
+                // Append image and details to list item
+                listItem.appendChild(coverImage);
+                listItem.appendChild(details);
+
+                // Append list item to songs list
+                songsList.appendChild(listItem);
+            });
+
+            document.getElementById('songs-list').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching songs:', error));
+}
+
+
+    function showStyles() {
+        document.getElementById('section-list').style.display = 'block';
+        document.getElementById('back-to-styles-btn').style.display = 'none';
+        document.getElementById('songs-list').style.display = 'none';
+    }
+</script>
 
 {% endblock content %}
