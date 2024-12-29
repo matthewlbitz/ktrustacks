@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from lists import genres, styles, stacks, artists, decades
 
 app = Flask(__name__)
 
@@ -24,11 +25,6 @@ class Album(db.Model):
     catalog_number = db.Column(db.String(100))
     shelf_label = db.Column(db.String(10))
 
-genres = ['blues', 'chickenskin', "children's", 'genetic memory', 'jazz', 'reggae', 'scordatura', 'spoken word', 'world', 'electronic', 'funk & soul', 'hip-hop', 'pop', 'rock', 'stage']
-decades = ['1900s', '1910s', '1920s', '1930s', '1940s', '1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s']
-styles = ['bop', 'post bop', 'interview', 'free jazz', 'experimental', 'afro-cuban jazz', 'cape jazz', 'contemporary jazz', 'latin jazz', 'salsa', 'guajira', 'guaracha', 'guaguancó', 'smooth jazz', 'cool jazz', 'nueva trova', 'cha-cha', 'instrumental', 'bolero', 'avant-garde jazz', 'merengue', 'mambo']
-artists = ['charles mingus', 'rova saxophone quartet', 'carl stone','hugh masekela', "marty ehrlich's dark woods ensemble", 'tim hagans', 'conexion latina', 'oscar castro-neves', 'pablo milanés', 'perez prado and his orchestra', 'mario pavone', 'marc ribot']
-stacks = ['2A']
 
 @app.route('/')
 def main():
@@ -64,7 +60,7 @@ def genre_search(genre):
 def style_search(style):
     results = Album.query.filter(Album.style.like(f"%{style}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -72,7 +68,7 @@ def style_search(style):
 def artist_search(artist):
     results = Album.query.filter(Album.artist.like(f"%{artist}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -80,7 +76,7 @@ def artist_search(artist):
 def stacks_search(stack):
     results = Album.query.filter(Album.shelf_label.like(f"%{stack}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -91,7 +87,9 @@ def decades_search(decade):
 
     results = Album.query.filter(Album.year >= start_year, Album.year <= end_year).all()
     print(start_year)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
     print(end_year)
     return jsonify({'songs': songs})
 
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000)
