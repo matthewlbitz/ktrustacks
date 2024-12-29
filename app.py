@@ -57,7 +57,7 @@ def decades_section():
 @app.route('/genres/<genre>')
 def genre_search(genre):
     results = Album.query.filter(Album.genre.like(f"%{genre}%")).all()
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
     return jsonify({'songs': songs})
 
 @app.route('/styles/<style>')
@@ -91,6 +91,7 @@ def decades_search(decade):
 
     results = Album.query.filter(Album.year >= start_year, Album.year <= end_year).all()
     print(start_year)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist} for album in results]
     print(end_year)
     return jsonify({'songs': songs})
+
