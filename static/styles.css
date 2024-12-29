@@ -295,6 +295,11 @@ h2 {
     padding: 20px;
 }
 
+.profile-content p {
+    color: goldenrod;
+    font-family:'Courier New', Courier, monospace;
+}
+
 /* Card container styling */
 #songs-list-ul {
     display: flex;

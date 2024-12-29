@@ -4,10 +4,10 @@
 
 <div class="section-content">
     <div class="search-bar">
-        <form>
+        <form id="search-bar">
             <input type="text" id="search-input" placeholder="Search stacks..." />
         </form>
-        <button id="back-to-stacks-btn" style="display: none;" onclick="showStacks()">Back to The Stacks</button>
+        <button id="back-to-stacks-btn" style="display: none;" onclick="location.reload()">Back to The Stacks</button>
     </div>
 
     <div id="section-list">
@@ -65,6 +65,7 @@
     function showSongs(stack) {
         document.getElementById('section-list').style.display = 'none';
         document.getElementById('back-to-stacks-btn').style.display = 'inline-block';
+        document.getElementById('search-bar').style.display = 'none';
 
         fetchSongs_stack(stack);
         console.log('finished fetchSongs-stacks', stack)
