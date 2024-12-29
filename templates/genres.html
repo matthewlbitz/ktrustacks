@@ -4,10 +4,13 @@
 
 <div class="section-content">
     <div class="search-bar">
-        <form>
+        <form id="search-bar">
             <input type="text" id="search-input" placeholder="Search genres..." />
         </form>
-        <button id="back-to-genres-btn" style="display: none;" onclick="showGenres()">Back to Genres</button>
+        <form id="title-search-bar" style="display: none;">
+            <input type="text" id="title-search-input" placeholder="Search...">
+        </form>
+        <button id="back-to-genres-btn" style="display: none;" onclick="location.reload()">Back to Genres</button>
     </div>
 
     <div id="section-list">
@@ -64,16 +67,32 @@
         });
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log('entered the title event listener');
+        const searchInput = document.getElementById("title-search-input");
+        const songItems = document.getElementById("songs-list-ul");
+
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase();
+
+            // Dynamically fetch all <li> elements during each input event
+            const songs = Array.from(songItems.querySelectorAll("li"));
+            console.log(songs);
+            songs.forEach((song) => {
+                const text = song.textContent.toLowerCase();
+                song.style.display = text.includes(query) ? "" : "none";
+            });
+        });
+    });
+
+
     function showSongs(genre) {
         document.getElementById('section-list').style.display = 'none';
         document.getElementById('back-to-genres-btn').style.display = 'inline-block';
+        document.getElementById('search-bar').style.display = 'none';
         console.log("entering showSongs")
         fetchSongs_genre(genre);
         console.log("finished fetchSongs_genre")
-    }
-
-    function poop() {
-        console.log(poop);
     }
 
     function fetchSongs_genre(genre) {
@@ -87,7 +106,6 @@
 
             data.songs.forEach(song => {
                 const listItem = document.createElement('li');
-                console.log('heres the song:', song);
                 listItem.addEventListener('click', () => showAlbumCard(song));
 
                 // Create cover image
@@ -121,16 +139,10 @@
             });
 
             document.getElementById('songs-list').style.display = 'block';
+            
         })
         .catch(error => console.error('Error fetching songs:', error));
 }
-
-    function showGenres() {
-        document.getElementById('section-list').style.display = 'block';
-        document.getElementById('back-to-genres-btn').style.display = 'none';
-        document.getElementById('songs-list').style.display = 'none';
-    }
-
     function showAlbumCard(album) {
         console.log("album card clicked:", album);
 
@@ -145,7 +157,7 @@
         const modalTracklist = document.getElementById("modal-album-tracklist");
 
         // Set album data
-        modalImage.src = album.image || "placeholder.jpg"; // Use placeholder if no image
+        modalImage.src = album.image;
         modalTitle.textContent = `${album.title} by ${album.artist}`;
         modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
 
@@ -173,7 +185,6 @@
         // Show the modal
         modal.style.display = "flex";
     }
-
 
     function closeModal() {
         document.getElementById("album-modal").style.display = "none";

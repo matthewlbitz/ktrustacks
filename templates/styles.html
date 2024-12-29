@@ -4,10 +4,10 @@
 
 <div class="section-content">
     <div class="search-bar">
-        <form>
+        <form id="search-bar">
             <input type="text" id="search-input" placeholder="Search styles..." />
         </form>
-        <button id="back-to-styles-btn" style="display: none;" onclick="showStyles()">Back to Styles</button>
+        <button id="back-to-styles-btn" style="display: none;" onclick="location.reload()">Back to Styles</button>
     </div>
 
     <div id="section-list">
@@ -65,6 +65,7 @@
     function showSongs(style) {
         document.getElementById('section-list').style.display = 'none';
         document.getElementById('back-to-styles-btn').style.display = 'inline-block';
+        document.getElementById('search-bar').style.display = 'none';
         console.log('entered showSongs()')
 
         fetchSongs_style(style);

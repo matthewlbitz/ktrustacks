@@ -104,23 +104,23 @@ def decades_section():
 
 @app.route('/genres-log')
 def genre_section_log():
-    return render_template('genres-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    return render_template('genres-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, username=session["username"])
 
 @app.route('/styles-log')
 def style_section_log():
-    return render_template('styles-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    return render_template('styles-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, username=session["username"])
 
 @app.route('/artists-log')
 def artist_section_log():
-    return render_template('artists-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    return render_template('artists-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, username=session["username"])
 
 @app.route('/the-stacks-log')
 def stacks_section_log():
-    return render_template('the-stacks-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    return render_template('the-stacks-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, username=session["username"])
 
 @app.route('/decades-log')
 def decades_section_log():
-    return render_template('decades-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    return render_template('decades-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, username=session["username"])
 
 @app.route('/genres/<genre>')
 def genre_search(genre):
