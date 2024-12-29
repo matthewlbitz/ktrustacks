@@ -26,21 +26,71 @@ class Album(db.Model):
 
 genres = ['blues', 'chickenskin', "children's", 'genetic memory', 'jazz', 'reggae', 'scordatura', 'spoken word', 'world', 'electronic', 'funk & soul', 'hip-hop', 'pop', 'rock', 'stage']
 decades = ['1900s', '1910s', '1920s', '1930s', '1940s', '1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s', '2020s']
+styles = ['bop', 'post bop', 'interview', 'free jazz', 'experimental', 'afro-cuban jazz', 'cape jazz', 'contemporary jazz', 'latin jazz', 'salsa', 'guajira', 'guaracha', 'guaguancó', 'smooth jazz', 'cool jazz', 'nueva trova', 'cha-cha', 'instrumental', 'bolero', 'avant-garde jazz', 'merengue', 'mambo']
+artists = ['charles mingus', 'rova saxophone quartet', 'carl stone','hugh masekela', "marty ehrlich's dark woods ensemble", 'tim hagans', 'conexion latina', 'oscar castro-neves', 'pablo milanés', 'perez prado and his orchestra', 'mario pavone', 'marc ribot']
+stacks = ['2A']
 
 @app.route('/')
 def main():
-    return render_template('home.html', genres=genres, decades=decades)
+    return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
 
-@app.route('/<section>')
-def section(section):
-    return render_template(f'{section}.html', section=section, genres=genres, decades=decades)
+@app.route('/genres')
+def genre_section():
+    return render_template('genres.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
 
-@app.route('/<section>/<subsection>')
-def subsection(section, subsection):
-    return render_template(f'{section}.html', section=section, subsection=subsection, genres=genres, decades=decades)
+@app.route('/styles')
+def style_section():
+    return render_template('styles.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/artists')
+def artist_section():
+    return render_template('artists.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/the-stacks')
+def stacks_section():
+    return render_template('the-stacks.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/decades')
+def decades_section():
+    return render_template('decades.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
 
 @app.route('/genres/<genre>')
 def genre_search(genre):
     results = Album.query.filter(Album.genre.like(f"%{genre}%")).all()
     songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    return jsonify({'songs': songs})
+
+@app.route('/styles/<style>')
+def style_search(style):
+    results = Album.query.filter(Album.style.like(f"%{style}%")).all()
+    print(results)
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    print(songs)
+    return jsonify({'songs': songs})
+
+@app.route('/artists/<artist>')
+def artist_search(artist):
+    results = Album.query.filter(Album.artist.like(f"%{artist}%")).all()
+    print(results)
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    print(songs)
+    return jsonify({'songs': songs})
+
+@app.route('/the-stacks/<stack>')
+def stacks_search(stack):
+    results = Album.query.filter(Album.shelf_label.like(f"%{stack}%")).all()
+    print(results)
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    print(songs)
+    return jsonify({'songs': songs})
+
+@app.route('/decades/<decade>')
+def decades_search(decade):
+    start_year = int(decade[0:4])
+    end_year = start_year + 9
+
+    results = Album.query.filter(Album.year >= start_year, Album.year <= end_year).all()
+    print(start_year)
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label} for album in results]
+    print(end_year)
     return jsonify({'songs': songs})
