@@ -1,0 +1,176 @@
+{% extends 'base-log.html' %}
+
+{% block content %}
+
+<div class="section-content">
+    <div class="search-bar">
+        <form>
+            <input type="text" id="search-input" placeholder="Search decades..." />
+        </form>
+        <button id="back-to-decades-btn" style="display: none;" onclick="showDecades()">Back to Decades</button>
+    </div>
+
+    <div id="section-list">
+        <ul id="decades-list">
+            {% for decade in decades %}
+            <li onclick="showSongs('{{ decade }}')">{{ decade }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="songs-list" style="display: none;">
+        <ul id="songs-list-ul">
+            {% for song in songs %}
+            <li>{{ song.title }} by {{ song.artist }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="album-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modal-album-title"></h2>
+                <p id="modal-album-artist"></p>
+            </div>
+            <div class="modal-body">
+                <div class="modal-left">
+                    <img id="modal-album-image" src="" alt="Album Cover" />
+                </div>
+                <div class="modal-right">
+                    <p id="modal-album-shelf"></p>
+                    <ul id="modal-album-tracklist"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("search-input");
+        const decadesList = document.getElementById("decades-list");
+        const decades = Array.from(decadesList.querySelectorAll("li"));
+
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase();
+
+            decades.forEach((decade) => {
+                const text = decade.textContent.toLowerCase();
+                decade.style.display = text.includes(query) ? "" : "none";
+            });
+        });
+    });
+
+    function showSongs(decade) {
+        document.getElementById('section-list').style.display = 'none';
+        document.getElementById('back-to-decades-btn').style.display = 'inline-block';
+
+        fetchSongs_decade(decade);
+        console.log('finished fetchSongs-decade', decade)
+    }
+
+    function fetchSongs_decade(decade) {
+    console.log('fetching songs with decade', decade);
+    fetch(`/decades/${decade}`)
+        .then(response => response.json())
+        .then(data => {
+            const songsList = document.getElementById('songs-list-ul');
+            songsList.innerHTML = '';  // Clear previous songs
+
+            data.songs.forEach(song => {
+                const listItem = document.createElement('li');
+                console.log('created list item', listItem);
+                listItem.addEventListener('click', () => showAlbumCard(song));
+
+                // Create cover image
+                const coverImage = document.createElement('img');
+                coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                coverImage.alt = `${song.title} cover`;
+
+                // Create song details container
+                const details = document.createElement('div');
+
+                // Title and artist
+                const titleArtist = document.createElement('div');
+                titleArtist.classList.add('title-artist');
+                titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                // Genre and shelf info
+                const genreShelf = document.createElement('div');
+                genreShelf.classList.add('genre-shelf');
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+
+                // Append details to details container
+                details.appendChild(titleArtist);
+                details.appendChild(genreShelf);
+
+                // Append image and details to list item
+                listItem.appendChild(coverImage);
+                listItem.appendChild(details);
+
+                // Append list item to songs list
+                songsList.appendChild(listItem);
+            });
+
+            document.getElementById('songs-list').style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching songs:', error));
+}
+
+
+    function showDecades() {
+        document.getElementById('section-list').style.display = 'block';
+        document.getElementById('back-to-decades-btn').style.display = 'none';
+        document.getElementById('songs-list').style.display = 'none';
+    }
+
+    function showAlbumCard(album) {
+        console.log("album card clicked:", album);
+
+        // Parse tracklist if it's a JSON string
+        const tracklist = typeof album.tracklist === 'string' ? JSON.parse(album.tracklist) : album.tracklist;
+
+        // Get modal elements
+        const modal = document.getElementById("album-modal");
+        const modalImage = document.getElementById("modal-album-image");
+        const modalTitle = document.getElementById("modal-album-title");
+        const modalShelf = document.getElementById("modal-album-shelf");
+        const modalTracklist = document.getElementById("modal-album-tracklist");
+
+        // Set album data
+        modalImage.src = album.image || "placeholder.jpg"; // Use placeholder if no image
+        modalTitle.textContent = `${album.title} by ${album.artist}`;
+        modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
+
+        // Clear previous tracklist
+        modalTracklist.innerHTML = "";
+        console.log('heres the tracklist:', tracklist);
+        // Add tracklist items
+        if (Array.isArray(tracklist)) {
+            tracklist.forEach(track => {
+                const trackItem = document.createElement("li");
+                trackItem.classList.add("track-item");
+
+                // Extract title and duration
+                const trackTitle = track.title || "Unknown Title";
+                const trackDuration = track.duration || "Unknown Duration";
+
+                // Format and display the track details
+                trackItem.textContent = `${trackTitle} (${trackDuration})`;
+                modalTracklist.appendChild(trackItem);
+            });
+        } else {
+            modalTracklist.textContent = "No tracklist available.";
+        }
+
+        // Show the modal
+        modal.style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("album-modal").style.display = "none";
+    }
+</script>
+
+{% endblock content %}
