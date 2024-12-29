@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, url_for, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from lists import genres, styles, stacks, artists, decades
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = "poop"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../albums.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -25,10 +27,60 @@ class Album(db.Model):
     catalog_number = db.Column(db.String(100))
     shelf_label = db.Column(db.String(10))
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(80), unique = True, index = True, nullable = False)
+    password_hash = db.Column(db.String(80), unique = True, index = True, nullable = False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 @app.route('/')
 def main():
+    if "username" in session:
+        return redirect(url_for('homelog'))
     return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        session['username'] = username
+        return redirect(url_for('homelog'))
+    else:
+        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form['username']
+    password = request.form['password']
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+    else:
+        new_user = User(username=username)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        session['username'] = username
+        return redirect(url_for('homelog'))
+
+@app.route('/logout')
+def logout():
+    session.pop('username')
+    return redirect(url_for('main'))
+
+@app.route('/home-log')
+def homelog():
+    if "username" in session:
+        return render_template('home-log.html', username=session["username"])
+    return redirect(url_for('main'))
 
 @app.route('/genres')
 def genre_section():
@@ -49,6 +101,26 @@ def stacks_section():
 @app.route('/decades')
 def decades_section():
     return render_template('decades.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/genres-log')
+def genre_section_log():
+    return render_template('genres-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/styles-log')
+def style_section_log():
+    return render_template('styles-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/artists-log')
+def artist_section_log():
+    return render_template('artists-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/the-stacks-log')
+def stacks_section_log():
+    return render_template('the-stacks-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/decades-log')
+def decades_section_log():
+    return render_template('decades-log.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
 
 @app.route('/genres/<genre>')
 def genre_search(genre):
@@ -92,4 +164,6 @@ def decades_search(decade):
     return jsonify({'songs': songs})
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(host="0.0.0.0", port=5000)

@@ -12,7 +12,16 @@
 
             <div class="profile-navigation-content">
                 <div class="profile-content">
-                    <h4>Profile</h4>
+                    <h4 onclick="showLoginModal()">Login</h4>
+                </div>
+
+                <div id="login-modal" style="display: none">
+                    <form id="auth-form" action="{{ url_for('login') }}" method="POST">
+                        <input type="text" name="username" placeholder="username" class="input-field"/>
+                        <input type="password" name="password" placeholder="password" class="input-field"/>
+                        <input type="submit" value="login" class="btn btn-login" onclick="setActionForm('login')"/>
+                        <input type="button" value="register" class="btn btn-login" onclick="setActionForm('register')"/>
+                    </form>
                 </div>
 
                 <div class="navigation-content">
@@ -34,6 +43,25 @@
 
         </div>
         <script>
+            function showLoginModal() {
+                document.getElementById('login-modal').style.position = 'fixed';
+                document.getElementById('login-modal').style.display = 'block';
+                console.log('clicked login button')
+            }
+
+            function setActionForm(action) {
+                let form = document.getElementById('auth-form');
+                if (action === 'login') {
+                    form.action = "{{ url_for('login') }}"
+                    form.method = 'post'
+                    form.submit();
+                } else if (action === 'register') {
+                    form.action = "{{ url_for('register') }}"
+                    form.method = 'post'
+                    form.submit();
+                }
+            }
+
             function fetchSongs_genre_nav(genre) {
             document.getElementById('section-list').style.display = 'none';
             console.log("got element by id")
