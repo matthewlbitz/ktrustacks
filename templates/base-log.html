@@ -66,6 +66,8 @@
                         listItem.classList.add('favorite-song');
                         //listItem.onclick = removeSong();
                         listItem.addEventListener('click', () => removeSong(song));
+                        console.log('heres the song', song);
+                        console.log('heres the song id', song.id);
 
                         // Create cover image
                         const coverImage = document.createElement('img');
@@ -74,6 +76,7 @@
 
                         // Create song details container
                         const details = document.createElement('div');
+
 
                         // Title and artist
                         const titleArtist = document.createElement('div');
@@ -114,12 +117,14 @@
             function removeSong(album) {
                 console.log("entered removeSong", album);
                 const addButton = document.getElementById('addButton');
-                addButton.dataset.albumId = album.id;
-                const albumId = addButton.dataset.albumId;
-                addButton.innerText = 'added to favorites!'
-                console.log('entered addToFavorites with id:', albumId);
+                album_id = album.id;
+                console.log('heres the album id', album_id);
+                //addButton.dataset.albumId = album.id;
+                //const albumId = addButton.dataset.albumId;
+                //addButton.innerText = 'added to favorites!'
+                console.log('entered addToFavorites with id:');
 
-                if (!albumId) {
+                if (!album_id) {
                     console.error('Album ID not found')
                     return;
                 }
@@ -129,11 +134,12 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ album_id: albumId })
+                    body: JSON.stringify({ album_id: album_id })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        console.log('heres the data for removesong', data);
                         fetchSongs_favorite();
                     } else {
                     }
