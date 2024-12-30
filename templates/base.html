@@ -65,6 +65,36 @@
                 }
             }
 
+            // Function to close the modal if clicked outside
+            async function closeModalIfClickedOutside(event) {
+                const modal = document.getElementById('login-modal');
+                
+                // Check if the modal is open and if the click was outside the modal
+                if (modal.style.display === 'block' && !modal.contains(event.target)) {
+                    // Add delay before closing the modal                    
+                    // After the delay, close the modal if still clicked outside
+                    if (modal.style.display === 'block' && !modal.contains(event.target)) {
+                        modal.style.display = 'none'; // Close the modal
+                        console.log('login modal hidden');
+                    }
+                }
+            }
+
+            // Add event listener for clicking outside the modal
+            window.addEventListener('click', closeModalIfClickedOutside);
+
+            // Prevent modal from closing when clicking inside the modal
+            const modal = document.getElementById('login-modal');
+            modal.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent click event from propagating to window
+            });
+
+            // Prevent the click on the login button from being captured by the window event
+            const loginButton = document.querySelector('h4[onclick="showLoginModal()"]');
+            loginButton.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent click event from propagating to window
+            });
+
 
             function setActionForm(action) {
                 let form = document.getElementById('auth-form');
