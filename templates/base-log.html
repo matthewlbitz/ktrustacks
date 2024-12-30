@@ -39,17 +39,107 @@
 
         <div class="main-content">
             <div class="dashboard-content">
-                <h1>Dashboard</h1><br>
+                <h1>my favorites</h1><br>
+                <div id="favorite-list">
+                    <ul id="favorite-songs-list-ul">
+                    </ul>
+                </div>
             </div>
 
             {% block content %} {% endblock content %}
 
         </div>
         <script>
+            window.addEventListener("load", fetchSongs_favorite);
+
+            function fetchSongs_favorite() {
+            console.log("entering fetchsongs_favorite")
+            fetch(`/get-favorite-songs`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('heres the data:', data)
+                    const songsList = document.getElementById('favorite-songs-list-ul');
+                    songsList.innerHTML = '';  // Clear previous songs
+
+                    data.songs.forEach(song => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('favorite-song');
+                        //listItem.onclick = removeSong();
+                        listItem.addEventListener('click', () => removeSong(song));
+
+                        // Create cover image
+                        const coverImage = document.createElement('img');
+                        coverImage.src = song.image || 'placeholder.jpg'; // Placeholder if no image
+                        coverImage.alt = `${song.title} cover`;
+
+                        // Create song details container
+                        const details = document.createElement('div');
+
+                        // Title and artist
+                        const titleArtist = document.createElement('div');
+                        titleArtist.classList.add('title-artist');
+                        const title = document.createElement('div');
+                        title.classList.add('title');
+                        title.textContent = `${song.title}`;
+                        const artist = document.createElement('div');
+                        artist.classList.add('artist');
+                        artist.textContent = `${song.artist}`
+
+                        // Append details to details container
+                        titleArtist.appendChild(title);
+                        titleArtist.appendChild(artist);
+
+                        details.appendChild(titleArtist);
+
+                        // Append image and details to list item
+                        listItem.appendChild(coverImage);
+                        listItem.appendChild(details);
+
+                        // Append list item to songs list
+                        songsList.appendChild(listItem);
+                    });
+
+                    document.getElementById('songs-list').style.display = 'block';
+                    
+                })
+                .catch(error => console.error('Error fetching songs:', error));
+        }
+
             function showLoginModal() {
                 document.getElementById('login-modal').style.position = 'fixed';
                 document.getElementById('login-modal').style.display = 'block';
                 console.log('clicked login button')
+            }
+
+            function removeSong(album) {
+                console.log("entered removeSong", album);
+                const addButton = document.getElementById('addButton');
+                addButton.dataset.albumId = album.id;
+                const albumId = addButton.dataset.albumId;
+                addButton.innerText = 'added to favorites!'
+                console.log('entered addToFavorites with id:', albumId);
+
+                if (!albumId) {
+                    console.error('Album ID not found')
+                    return;
+                }
+
+                fetch('/remove-from-favorites', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ album_id: albumId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchSongs_favorite();
+                    } else {
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
             }
 
             function setActionForm(action) {
@@ -341,15 +431,15 @@
 
     window.onload = function() {
         var currentPath = window.location.pathname; // Get the current path
-        if (currentPath === '/genres') {
+        if (currentPath === '/genres-log') {
             document.getElementById('genres-tab').classList.add('active');
-        } else if (currentPath === '/styles') {
+        } else if (currentPath === '/styles-log') {
             document.getElementById('styles-tab').classList.add('active');
-        } else if (currentPath === '/artists') {
+        } else if (currentPath === '/artists-log') {
             document.getElementById('artists-tab').classList.add('active');
-        } else if (currentPath === '/decades') {
+        } else if (currentPath === '/decades-log') {
             document.getElementById('decades-tab').classList.add('active');
-        } else if (currentPath === '/the-stacks') {
+        } else if (currentPath === '/the-stacks-log') {
             document.getElementById('stacks-tab').classList.add('active');
         }
 }

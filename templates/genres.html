@@ -66,6 +66,36 @@
             });
         });
     });
+    
+    function addToFavorites() {
+
+        const addButton = document.getElementById('addButton');
+        const albumId = addButton.dataset.albumId;
+        console.log('entered addToFavorites with id:', albumId);
+
+        if (!albumId) {
+            console.error('Album ID not found')
+            return;
+        }
+
+        fetch('/add-to-favorites', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ album_id: albumId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+        
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         console.log('entered the title event listener');
@@ -160,6 +190,9 @@
         modalImage.src = album.image;
         modalTitle.textContent = `${album.title} by ${album.artist}`;
         modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
+
+        const addButton = document.getElementById('addButton');
+        addButton.dataset.albumId = album.id;
 
         // Clear previous tracklist
         modalTracklist.innerHTML = "";

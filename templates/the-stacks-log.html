@@ -30,6 +30,7 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
             <div class="modal-header">
+                <p id="addButton" onclick="addToFavorites()">Add to Favorites</p>
                 <h2 id="modal-album-title"></h2>
                 <p id="modal-album-artist"></p>
             </div>
@@ -70,6 +71,37 @@
         fetchSongs_stack(stack);
         console.log('finished fetchSongs-stacks', stack)
     }
+
+    function addToFavorites() {
+
+        const addButton = document.getElementById('addButton');
+        const albumId = addButton.dataset.albumId;
+        addButton.innerText = 'added to favorites!'
+        console.log('entered addToFavorites with id:', albumId);
+
+        if (!albumId) {
+            console.error('Album ID not found')
+            return;
+        }
+
+        fetch('/add-to-favorites', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ album_id: albumId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            } else {
+                fetchSongs_favorite();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        }
+
 
     function fetchSongs_stack(stack) {
     console.log('fetching songs with stack', stack);
@@ -143,6 +175,10 @@
         modalImage.src = album.image || "placeholder.jpg"; // Use placeholder if no image
         modalTitle.textContent = `${album.title} by ${album.artist}`;
         modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
+
+        const addButton = document.getElementById('addButton');
+        addButton.dataset.albumId = album.id;
+        addButton.innerText = "add to favorites"
 
         // Clear previous tracklist
         modalTracklist.innerHTML = "";
