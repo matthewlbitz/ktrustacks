@@ -457,6 +457,13 @@ footer {
     align-items: end;
 }
 
+.abc:hover,
+.abc:hover + .abc {
+    color: red;
+    -webkit-text-stroke: 0.7px red;
+}
+
+
 #login-modal {
     display: none;
     font-family:'Courier New', Courier, monospace;
