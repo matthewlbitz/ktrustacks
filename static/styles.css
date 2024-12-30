@@ -140,6 +140,58 @@ h2 {
     height: 80%;
 }
 
+#album-locator {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+#album-id {
+    background-color: black;
+    border: 2px goldenrod solid;
+    color: goldenrod;
+    font-family:'Courier New', Courier, monospace;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 5px;
+    width: 150px;
+}
+
+button[type="submit"] {
+    background: none;
+    border: none;
+    color: goldenrod;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    cursor: pointer;
+    text-decoration: underline;
+    width: 68px;
+}
+
+#album-id-btn {
+    background-color: goldenrod;
+    color: black;
+    font-family:'Courier New', Courier, monospace;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#shelf-label {
+    position: absolute;
+    top: 65px;
+    left: 30px;
+    color: goldenrod;
+    font-family:'Courier New', Courier, monospace;
+}
+
+.highlight {
+    color: red;
+    -webkit-text-stroke: 0.7px red;
+}
+
+
+
 .stacks-content pre {
     font-size: 9px;
     font-weight: 900;
@@ -287,6 +339,7 @@ h2 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .section-content {

@@ -2,7 +2,12 @@
 
 {% block content %}
             <div class="stacks-content">
-                <pre>                                                                                                         <span class="v-col-6">-=========</span>|<span class="v-col-7">-===========</span>|<span class="v-col-8">-=========:</span>                        
+                <form id="album-locator" action="/album-locator" method="POST">
+                  <input type="text" id="album-id" placeholder="album barcode" />
+                  <button type="submit" id="album-id-btn">locate</button>
+                </form>
+                <p id="shelf-label"></p>
+                <pre class="stacks">                                                                                                         <span class="v-col-6">-=========</span>|<span class="v-col-7">-===========</span>|<span class="v-col-8">-=========:</span>                        
                                                                                                          <span class="v-col-6">==========</span>|<span class="v-col-7">============</span>|<span class="v-col-8">==========-</span>                        
                                                                                                   <span class="v-col-5">:::::</span> <span class="v-col-6">:--::-----</span>|<span class="v-col-7">-----:------</span>|<span class="v-col-8">---:-----:</span><span class="v-col-9">::::::</span>                  
                                                                                                  <span class="v-col-5">:+==++:</span>                                  <span class="v-col-9">:===+==:</span>                 
@@ -125,7 +130,48 @@
                 });
             });
 
+            document.getElementById('album-locator').addEventListener('submit', async function (e) {
+              console.log('entered album-locator event listener');
+              e.preventDefault();
 
+              const albumId = document.getElementById('album-id').value;
+              console.log('albumId for locater:', albumId);
+              const response = await fetch('/album-locator', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ id: albumId})
+              });
+
+              console.log('response:', response);
+
+              if (response.ok) {
+                const data = await response.json();
+                const shelfLabel = data.shelf_label[0]['shelf_label'];
+
+                document.getElementById('shelf-label').textContent = `Shelf Label: ${shelfLabel}`;
+                console.log('shelf label:', shelfLabel);
+                const match = shelfLabel.match(/^v?.?(\d+)/);
+                if (match) {
+                  const stackNumber = match.slice(0, -1)
+                  console.log('stacksnumber:', stackNumber);
+
+                  document.querySelectorAll('.stacks .highlight').forEach(e1 => {
+                    e1.classList.remove('highlight');
+                  });
+
+                  const stackClass = shelfLabel.startsWith('v.') ? `v-col-${stackNumber}` : `col-${stackNumber}`;
+                  console.log('stack class:', stackClass);
+                  const stacks = document.querySelectorAll(`.${stackClass}`);
+                  stacks.forEach(stack => {
+                    stack.classList.add('highlight');
+                  }); 
+                }
+              } else {
+                document.getElementById('shelf-label').textContent = 'Album not found';
+              }
+            }) ;
             </script>
 
 {% endblock content %}
