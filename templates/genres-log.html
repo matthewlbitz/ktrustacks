@@ -69,7 +69,6 @@
     });
 
     function addToFavorites() {
-
         const addButton = document.getElementById('addButton');
         const albumId = addButton.dataset.albumId;
         addButton.innerText = 'added to favorites!'
@@ -133,6 +132,12 @@
                 const titleArtist = document.createElement('div');
                 titleArtist.classList.add('title-artist');
                 titleArtist.textContent = `${song.title} by ${song.artist}`;
+
+                //const addButton = document.getElementById('addButton');
+                //addButton.dataset.albumId = album.id;
+                //addButton.innerText = "add to favorites"
+
+                //const albumId = document.getElementById('addButton');
 
                 // Genre and shelf info
                 const genreShelf = document.createElement('div');

@@ -115,6 +115,7 @@ def remove_from_favorites():
         return jsonify({'error': 'User not found'}), 404
     
     album_id = request.json.get('album_id')
+    print(album_id)
     album = Album.query.get(album_id)
     if not album:
         return jsonify({'error': 'Album not found'}), 404
