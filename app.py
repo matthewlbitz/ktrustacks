@@ -227,6 +227,18 @@ def decades_search(decade):
     print(end_year)
     return jsonify({'songs': songs})
 
+@app.route('/album-locator', methods=['POST'])
+def locate_album():
+    album_id = request.form.get('id')
+    print('album_id', album_id)
+    result = Album.query.filter(Album.id == album_id).first()
+    print('result:', result)
+    if result:
+        song = [{'shelf_label': result.shelf_label}]
+        return jsonify({'shelf_label': song})
+    else:
+        return jsonify({'error': 'Album not found'}), 404
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
