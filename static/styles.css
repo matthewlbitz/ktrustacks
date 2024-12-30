@@ -363,6 +363,79 @@ h2 {
     margin-top: 5px;
 }
 
+.dashboard-content {
+    overflow: auto;
+}
+
+.dashboard-content h1 {
+    position:static;
+}
+
+#favorite-list {
+    overflow: auto;
+}
+
+.title,
+.artist {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#favorite-songs-list-ul {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+#favorite-songs-list-ul li {
+    border: 1px goldenrod solid;
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+    border-radius: 5px;
+}
+
+#favorite-songs-list-ul li img {
+    width: 20px; /* Slightly larger image */
+    height: 20px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#favorite-songs-list-ul li .title-artist {
+    font-size: 10px;
+    font-weight: bold;
+    color: goldenrod;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+.modal-header p {
+    color: black;
+    background-color: goldenrod;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    width: 175px;
+    justify-content: center;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.modal-header p:hover {
+    color: goldenrod;
+    background-color: black;
+    border: 1px goldenrod solid;
+}
 
 footer {
     display: flex;
@@ -384,8 +457,79 @@ footer {
     align-items: end;
 }
 
+#login-modal {
+    display: none;
+    font-family:'Courier New', Courier, monospace;
+    position: fixed;
+    top: 50px;
+    right: 20px; /* Positioned in the top-right corner */
+    background-color: black;
+    color: goldenrod;
+    border: 2px solid goldenrod;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 250px; /* Smaller modal size */
+    z-index: 1000;
+  }
+  
+  #login-modal form {
+    display: flex;
+    flex-direction: column;
+    font-family:'Courier New', Courier, monospace;
+    gap: 10px;
+  }
+  
+  .input-field {
+    padding: 8px; /* Smaller input fields */
+    font-size: 14px;
+    border: 2px solid goldenrod;
+    font-family:'Courier New', Courier, monospace;
+    border-radius: 5px;
+    background-color: black;
+    color: goldenrod;
+    outline: none;
+  }
+  
+  .input-field::placeholder {
+    color: goldenrod;
+    font-family:'Courier New', Courier, monospace;
+    opacity: 0.8;
+  }
+  
+  .button-group {
+    display: flex;
+    font-family:'Courier New', Courier, monospace;
+    justify-content: space-between; /* Align buttons next to each other */
+    gap: 5px;
+  }
+  
+  .btn-login {
+    padding: 5px 10px; /* Smaller buttons */
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    background-color: goldenrod;
+    font-family:'Courier New', Courier, monospace;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-login:hover {
+    background-color: #daa520;
+    font-family:'Courier New', Courier, monospace;
+  }
+  
+  .btn-login:active {
+    background-color: #b8860b;
+    font-family:'Courier New', Courier, monospace;
+  }
+  
 .footer-content h4 {
     margin-bottom: 5px;
+    font-family:'Courier New', Courier, monospace;
 }
 
 /* Highlight the active tab */
@@ -445,11 +589,6 @@ footer {
     margin: 0;
     padding-left: 0;
     font-size: 1.8rem;
-}
-
-.modal-header p {
-    margin: 0;
-    color: white;
 }
 
 .modal-body {

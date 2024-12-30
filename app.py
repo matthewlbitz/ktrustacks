@@ -11,6 +11,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+user_favorites = db.Table('user_favorites',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True),
+    db.Column('album_id', db.Integer, db.ForeignKey('album.id'), primary_key = True)                          
+)
+
 class Album(db.Model):
     __tablename__ = 'album'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -26,11 +31,13 @@ class Album(db.Model):
     label = db.Column(db.String(200))
     catalog_number = db.Column(db.String(100))
     shelf_label = db.Column(db.String(10))
+    favorited_by = db.relationship('User', secondary=user_favorites, back_populates='favorites')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(80), unique = True, index = True, nullable = False)
     password_hash = db.Column(db.String(80), unique = True, index = True, nullable = False)
+    favorites = db.relationship('Album', secondary=user_favorites, back_populates='favorited_by')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -54,7 +61,8 @@ def login():
         session['username'] = username
         return redirect(url_for('homelog'))
     else:
-        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+        error = "Invalid username and/or password. Please try again."
+        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, error=error)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -75,6 +83,62 @@ def register():
 def logout():
     session.pop('username')
     return redirect(url_for('main'))
+
+@app.route('/add-to-favorites', methods=['POST'])
+def add_to_favorites():
+    if 'username' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+    
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    album_id = request.json.get('album_id')
+    album = Album.query.get(album_id)
+    if not album:
+        return jsonify({'error': 'Album not found'}), 404
+    
+    if album not in user.favorites:
+        user.favorites.append(album)
+        db.session.commit()
+        return jsonify({'success': f'Added {album.title} to favorites'}), 200
+    else:
+        return jsonify({'error': 'Album already in favorites'}), 400
+
+@app.route('/remove-from-favorites', methods=['DELETE'])
+def remove_from_favorites():
+    if 'username' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+    
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    album_id = request.json.get('album_id')
+    album = Album.query.get(album_id)
+    if not album:
+        return jsonify({'error': 'Album not found'}), 404
+    
+    if album in user.favorites:
+        user.favorites.remove(album)
+        db.session.commit()
+        return jsonify({'success': f'Added {album.title} to favorites'}), 200
+    else:
+        return jsonify({'error': 'Album already in favorites'}), 400
+
+@app.route('/get-favorite-songs')
+def get_favorite_songs():
+    if 'username' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+    
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    results = user.favorites
+    print('results', results)
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    return jsonify({'songs': songs})
 
 @app.route('/home-log')
 def homelog():
