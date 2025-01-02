@@ -49,6 +49,9 @@
             </div>
         </div>
     </div>
+    <div id="add-song">
+
+    </div>
 
 </div>
 
@@ -190,15 +193,22 @@
         // Add tracklist items
         if (Array.isArray(tracklist)) {
             tracklist.forEach(track => {
-                const trackItem = document.createElement("li");
+                const trackItem = document.createElement('div');
+                const trackName = document.createElement("li");
                 trackItem.classList.add("track-item");
+                trackName.classList.add("track-name");
+                const trackAdd = document.createElement("h3");
+                trackAdd.textContent = "+";
+                trackAdd.onclick = () => handleAddClick(track.title, track.duration, album.id, album.title);
 
                 // Extract title and duration
                 const trackTitle = track.title || "Unknown Title";
-                const trackDuration = track.duration || "Unknown Duration";
+                const trackDuration = track.duration;
 
                 // Format and display the track details
-                trackItem.textContent = `${trackTitle} (${trackDuration})`;
+                trackName.textContent = `${trackTitle} ${trackDuration}`;
+                trackItem.appendChild(trackName);
+                trackItem.appendChild(trackAdd);
                 modalTracklist.appendChild(trackItem);
             });
         } else {
@@ -207,6 +217,33 @@
 
         // Show the modal
         modal.style.display = "flex";
+    }
+
+    async function handleAddClick(trackId, trackDuration, albumId, albumTitle) {
+        console.log('entered handleAddClick() with info:', trackId, trackDuration, albumId, albumTitle);
+
+        const addSong = document.getElementById('add-song');
+        const playlistList = document.createElement('ul');
+        
+
+        try {
+        // Send a POST request to the '/add-song' endpoint
+        const response = await fetch('/add-song', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ trackId, trackDuration, albumId, albumTitle}), // Pass the trackId in the request body
+        });
+
+        if (response.ok) {
+            console.log(`Successfully added track with ID: ${trackId}`);
+        } else {
+            console.error(`Failed to add track with ID: ${trackId}`);
+        }
+        } catch (error) {
+        console.error(`Error adding track with ID: ${trackId}:`, error);
+        }
     }
 
     function closeModal() {
