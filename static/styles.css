@@ -284,6 +284,7 @@ button[type="submit"] {
     padding: 0;
     overflow-y: auto;
     max-height: 475px;
+    width: 100%;
 }
 
 #section-list ul,
@@ -372,6 +373,7 @@ button[type="submit"] {
     padding: 20px;
     list-style-type: none;
     margin: 0;
+    width: 100%;
 }
 
 /* Individual song card styling */
@@ -382,7 +384,7 @@ button[type="submit"] {
     border-radius: 10px;
     background-color: #111; /* Dark background */
     padding: 15px;
-    width: 300px; /* Three cards per row with space */
+    width: 30%; /* Three cards per row with space */
     max-width: 350px; /* Maximum width for the card */
     box-sizing: border-box;
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
@@ -766,3 +768,34 @@ footer {
     overflow: auto;
 }
 
+.page {
+    all: unset; /* Resets all styles, including default button styles */
+    font: inherit; /* Matches the surrounding font */
+    color: inherit; /* Matches the surrounding text color */
+    margin: 0; /* Removes default margin if any */
+    padding: 0; /* Removes default padding */
+    text-align: start; /* Ensures text alignment matches a <p> */
+    line-height: 1.5; /* Mimics typical paragraph spacing */
+    padding: 5px 10px;
+    border: 1px goldenrod solid;
+    border-radius: 3px;
+    margin-top: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.page:hover {
+    all: unset; /* Resets all styles, including default button styles */
+    font: inherit; /* Matches the surrounding font */
+    color: inherit; /* Matches the surrounding text color */
+    margin: 0; /* Removes default margin if any */
+    padding: 0; /* Removes default padding */
+    text-align: start; /* Ensures text alignment matches a <p> */
+    line-height: 1.5; /* Mimics typical paragraph spacing */
+    padding: 5px 10px;
+    border: 1px goldenrod solid;
+    color: black;
+    background-color: goldenrod;
+    border-radius: 3px;
+    margin-top: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
