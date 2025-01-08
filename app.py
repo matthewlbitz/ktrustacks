@@ -16,6 +16,26 @@ user_favorites = db.Table('user_favorites',
     db.Column('album_id', db.Integer, db.ForeignKey('album.id'), primary_key = True)                          
 )
 
+playlist_songs = db.Table('playlist_songs',
+    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
+    db.Column('song_id', db.Integer, db.ForeignKey('song.id'), primary_key=True)
+)
+
+class Song(db.Model):
+    id = db.Column(db.Integer, primary_key = True, nullable = False)
+    name = db.Column(db.String(500), unique = False)
+    duration = db.Column(db.String(10), unique = False)
+    album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False)
+    album = db.relationship('Album', back_populates='songs')
+    playlists = db.relationship('Playlist', secondary=playlist_songs, back_populates='songs')
+
+class Playlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(100), index = True, unique = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', back_populates='playlists')
+    songs = db.relationship('Song', secondary=playlist_songs, back_populates='playlists')
+
 class Album(db.Model):
     __tablename__ = 'album'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -32,12 +52,14 @@ class Album(db.Model):
     catalog_number = db.Column(db.String(100))
     shelf_label = db.Column(db.String(10))
     favorited_by = db.relationship('User', secondary=user_favorites, back_populates='favorites')
+    songs = db.relationship('Song', back_populates='album', cascade='all, delete-orphan')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(80), unique = True, index = True, nullable = False)
-    password_hash = db.Column(db.String(80), unique = True, index = True, nullable = False)
+    password_hash = db.Column(db.String(255), unique = True, index = True, nullable = False)
     favorites = db.relationship('Album', secondary=user_favorites, back_populates='favorited_by')
+    playlists = db.relationship('Playlist', back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -51,6 +73,102 @@ def main():
     if "username" in session:
         return redirect(url_for('homelog'))
     return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+
+@app.route('/create-playlist', methods=['POST'])
+def create_playlist():
+    user = User.query.filter_by(username=session['username']).first()
+    user_id = user.id
+    print('user_ud', user_id)
+    data = request.get_json()
+    print('heres the data:', data)
+    playlist_name = data['playlist_name']
+    print('playlist name:', playlist_name)
+    
+    if not playlist_name:
+        # Return a JSON response with an error message
+        return jsonify({'message': 'Playlist name is required'}), 400
+    
+    new_playlist = Playlist(name=playlist_name, user_id=user_id)
+
+    db.session.add(new_playlist)
+    db.session.commit()
+
+    # Simulate saving to the database (or any other action)
+    print(f"Creating playlist: {playlist_name}")
+
+    # Return a success response as JSON
+    return jsonify({'message': f"Playlist '{playlist_name}' created successfully"}), 200
+
+@app.route('/get-playlists', methods=['GET'])
+def get_playlists():
+    if 'username' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    playlists = Playlist.query.filter_by(user_id=user.id).all()
+    return jsonify({
+        'playlists': [{'id': playlist.id, 'name': playlist.name} for playlist in playlists]
+    })
+
+@app.route('/remove-playlist', methods=['DELETE'])
+def remove_playlist():
+    print('entered the remove playlist endpoint')
+    if 'username' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+
+    # Get the user from the session
+    user = User.query.filter_by(username=session['username']).first()
+    print('user idL', user.id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    playlist_id = data.get('playlist_id')
+    
+    print('playlist id:', playlist_id)
+    # Get the playlist by its ID
+    playlist = Playlist.query.get(playlist_id)
+    print('playlist object:', playlist)
+    print('playlist user_id from object', playlist.user_id)
+    if not playlist:
+        return jsonify({'error': 'Playlist not found'}), 404
+
+    # Check if the playlist belongs to the logged-in user
+    if playlist.user_id != user.id:
+        return jsonify({'error': 'You can only remove your own playlists'}), 403
+
+    print('log for testing 1')
+    # Remove the playlist from the user's list
+    user.playlists.remove(playlist)
+    print('log for testing 2')
+    print(f"User's playlists after removal: {[p.name for p in user.playlists]}")
+    db.session.delete(playlist)
+    db.session.commit()
+    print('playlist name', playlist.name)
+    
+    return jsonify({'success': f'Removed {playlist.name} from playlists'}), 200
+
+@app.route('/add-song', methods=['POST'])
+def add_song():
+    # Parse JSON request data
+    data = request.get_json()
+    print('heres the data for addsong', data)
+    if not data or 'trackId' not in data:
+        return jsonify({'error': 'Track ID is required'}), 400
+
+    trackTitle = data['trackId']
+    trackDuration = data['trackDuration']
+    albumId = data['albumId']
+
+    new_song = Song(name=trackTitle, duration=trackDuration, album_id=albumId)
+
+    db.session.add(new_song)
+    db.session.commit()
+    return jsonify({'message': 'Track added successfully', 'trackTitle': trackTitle}), 201
+
 
 @app.route('/login', methods=['POST'])
 def login():

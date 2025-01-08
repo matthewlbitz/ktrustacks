@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 <div class="section-content">
     <div class="search-bar">
         <form id="search-bar">
@@ -25,6 +27,8 @@
             {% endfor %}
         </ul>
     </div>
+
+    <div id="pagination-wrapper"></div>
 
     <div id="album-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -71,15 +75,86 @@
         console.log('finished fetchSongs-artists', artist)
     }
 
+    var state = {
+        'querySet': [],
+
+        'page': 1,
+        'rows': 50,
+
+        'window': 5,
+    }
+
+    function pagination(querySet, page, rows) {
+        var trimStart = (page - 1) * rows;
+        var trimEnd = trimStart + rows;
+        console.log('page and row:', page, rows);
+
+        var trimmedData = querySet.slice(trimStart, trimEnd);
+
+        var pages = Math.ceil(querySet.length / rows);
+
+        return {
+            'querySet':trimmedData,
+            'pages':pages
+        }
+    }
+
+    function pageButtons(pages, artist) {
+        var wrapper = document.getElementById('pagination-wrapper');
+
+        wrapper.innerHTML = ``;
+        console.log('Pages and genre:', pages);
+        
+        var maxLeft = (state.page - Math.floor(state.window / 2 ))
+        var maxRight = (state.page + Math.floor(state.window / 2 ))
+
+        if (maxLeft < 1) {
+            maxLeft = 1;
+            maxRight = state.window;
+        }
+
+        if (maxRight > pages) {
+            maxLeft = pages - state.window - 1;
+            maxRight = pages;
+
+            if (maxLeft < 1) {
+                maxLeft = 1;
+            }
+        }
+
+        for (var page = maxLeft; page <= maxRight; page++) {
+            wrapper.innerHTML += `<button value=${page} class="page">${page}</button>`;
+        }
+
+        if (state.page > 0 && state.page < pages + 1) {
+            wrapper.innerHTML = `<button value=${1} class="page">&#171 First</button>` + 
+            `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
+            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>` + `<button value=${pages} class="page">Last &#187;</button>`;
+        }
+
+        $('.page').on('click', function() {
+            $('#songs-list-ul').empty();
+
+            state.page = Number($(this).val());
+            console.log('state.page', state.page);
+
+            fetchSongs_artist(artist);
+        })
+    }
+
+
     function fetchSongs_artist(artist) {
     console.log('fetching songs with artist', artist);
     fetch(`/artists/${artist}`)
         .then(response => response.json())
         .then(data => {
+            state.querySet = data.songs;
+            var songData = pagination(state.querySet, state.page, state.rows);
+            console.log('Data:', songData);
             const songsList = document.getElementById('songs-list-ul');
             songsList.innerHTML = '';  // Clear previous songs
 
-            data.songs.forEach(song => {
+            songData.querySet.forEach(song => {
                 const listItem = document.createElement('li');
                 console.log('created list item', listItem);
                 listItem.addEventListener('click', () => showAlbumCard(song));
@@ -115,6 +190,7 @@
             });
 
             document.getElementById('songs-list').style.display = 'block';
+            pageButtons(songData['pages'], artist);
         })
         .catch(error => console.error('Error fetching songs:', error));
 }

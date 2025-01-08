@@ -254,8 +254,21 @@ button[type="submit"] {
     text-align: center;
 }
 
-.dashboard-content h1 {
-    margin-top: 20px;
+.dashboard-content h1.favorite-title {
+    margin: 10px 4px 4px 4px;
+    padding: 1px;
+    font-weight: 550;
+}
+
+.dashboard-content h1:hover {
+    border: 1px solid goldenrod;
+    border-radius: 5px;
+}
+
+.track-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 #section-list,
@@ -271,6 +284,7 @@ button[type="submit"] {
     padding: 0;
     overflow-y: auto;
     max-height: 475px;
+    width: 100%;
 }
 
 #section-list ul,
@@ -359,6 +373,7 @@ button[type="submit"] {
     padding: 20px;
     list-style-type: none;
     margin: 0;
+    width: 100%;
 }
 
 /* Individual song card styling */
@@ -369,7 +384,7 @@ button[type="submit"] {
     border-radius: 10px;
     background-color: #111; /* Dark background */
     padding: 15px;
-    width: 300px; /* Three cards per row with space */
+    width: 30%; /* Three cards per row with space */
     max-width: 350px; /* Maximum width for the card */
     box-sizing: border-box;
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
@@ -424,6 +439,7 @@ button[type="submit"] {
 
 #favorite-list {
     overflow: auto;
+
 }
 
 .title,
@@ -536,6 +552,61 @@ footer {
     flex-direction: column;
     font-family:'Courier New', Courier, monospace;
     gap: 10px;
+  }
+
+  #create-playlist-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #playlist-input-field {
+    width: 40%;
+    background-color: black;
+    border: 1px goldenrod solid;
+    font-family:'Courier New', Courier, monospace;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding-left: 6px;
+    color: goldenrod;
+  }
+
+  #playlist-create-btn {
+    width: 17%;
+    --font-size: 15px;
+    margin-bottom: 5px;
+  }
+
+  .playlist-title {
+    width: 80%;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.95em;
+    font-weight: 550;
+  }
+
+  .add-playlist {
+    width: 10%;
+    font-size: 20px;
+    margin: 0 auto;
+    margin-top: 11px;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  .playlist-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #playlist-list li {
+    font-size: 20px;
+  }
+
+  #create-playlist-modal {
+    display: block;
   }
   
   .input-field {
@@ -697,3 +768,34 @@ footer {
     overflow: auto;
 }
 
+.page {
+    all: unset; /* Resets all styles, including default button styles */
+    font: inherit; /* Matches the surrounding font */
+    color: inherit; /* Matches the surrounding text color */
+    margin: 0; /* Removes default margin if any */
+    padding: 0; /* Removes default padding */
+    text-align: start; /* Ensures text alignment matches a <p> */
+    line-height: 1.5; /* Mimics typical paragraph spacing */
+    padding: 5px 10px;
+    border: 1px goldenrod solid;
+    border-radius: 3px;
+    margin-top: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.page:hover {
+    all: unset; /* Resets all styles, including default button styles */
+    font: inherit; /* Matches the surrounding font */
+    color: inherit; /* Matches the surrounding text color */
+    margin: 0; /* Removes default margin if any */
+    padding: 0; /* Removes default padding */
+    text-align: start; /* Ensures text alignment matches a <p> */
+    line-height: 1.5; /* Mimics typical paragraph spacing */
+    padding: 5px 10px;
+    border: 1px goldenrod solid;
+    color: black;
+    background-color: goldenrod;
+    border-radius: 3px;
+    margin-top: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}

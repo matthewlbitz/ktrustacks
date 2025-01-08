@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 <div class="section-content">
     <div class="search-bar">
         <form id="search-bar">
@@ -29,6 +31,8 @@
         </ul>
     </div>
 
+    <div id="pagination-wrapper"></div>
+
     <!-- Modal -->
     <div id="album-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -48,6 +52,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="add-song">
+
     </div>
 
 </div>
@@ -107,16 +114,87 @@
         console.log("finished fetchSongs_genre")
     }
 
+    var state = {
+        'querySet': [],
+
+        'page': 1,
+        'rows': 50,
+
+        'window': 5,
+    }
+
+    function pagination(querySet, page, rows) {
+        var trimStart = (page - 1) * rows;
+        var trimEnd = trimStart + rows;
+        console.log('page and row:', page, rows);
+
+        var trimmedData = querySet.slice(trimStart, trimEnd);
+
+        var pages = Math.ceil(querySet.length / rows);
+
+        return {
+            'querySet':trimmedData,
+            'pages':pages
+        }
+    }
+
+    function pageButtons(pages, genre) {
+        var wrapper = document.getElementById('pagination-wrapper');
+
+        wrapper.innerHTML = ``;
+        console.log('Pages and genre:', pages, genre);
+        
+        var maxLeft = (state.page - Math.floor(state.window / 2 ))
+        var maxRight = (state.page + Math.floor(state.window / 2 ))
+
+        if (maxLeft < 1) {
+            maxLeft = 1;
+            maxRight = state.window;
+        }
+
+        if (maxRight > pages) {
+            maxLeft = pages - state.window - 1;
+            maxRight = pages;
+
+            if (maxLeft < 1) {
+                maxLeft = 1;
+            }
+        }
+
+        for (var page = maxLeft; page <= maxRight; page++) {
+            wrapper.innerHTML += `<button value=${page} class="page">${page}</button>`;
+        }
+
+        if (state.page > 0 && state.page < pages + 1) {
+            wrapper.innerHTML = `<button value=${1} class="page">&#171 First</button>` + 
+            `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
+            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>` + `<button value=${pages} class="page">Last &#187;</button>`;
+        }
+
+        $('.page').on('click', function() {
+            $('#songs-list-ul').empty();
+
+            state.page = Number($(this).val());
+            console.log('state.page', state.page, genre);
+
+            fetchSongs_genre(genre);
+        })
+    }
+
+
     function fetchSongs_genre(genre) {
     console.log("entering fetchsongs")
     fetch(`/genres/${genre}`)
         .then(response => response.json())
         .then(data => {
             console.log('heres the data:', data)
+            state.querySet = data.songs;
+            var songData = pagination(state.querySet, state.page, state.rows);
+            console.log('Data:', songData);
             const songsList = document.getElementById('songs-list-ul');
             songsList.innerHTML = '';  // Clear previous songs
 
-            data.songs.forEach(song => {
+            songData.querySet.forEach(song => {
                 const listItem = document.createElement('li');
                 listItem.addEventListener('click', () => showAlbumCard(song));
 
@@ -157,6 +235,7 @@
             });
 
             document.getElementById('songs-list').style.display = 'block';
+            pageButtons(songData['pages'], genre);
             
         })
         .catch(error => console.error('Error fetching songs:', error));
@@ -190,15 +269,22 @@
         // Add tracklist items
         if (Array.isArray(tracklist)) {
             tracklist.forEach(track => {
-                const trackItem = document.createElement("li");
+                const trackItem = document.createElement('div');
+                const trackName = document.createElement("li");
                 trackItem.classList.add("track-item");
+                trackName.classList.add("track-name");
+                const trackAdd = document.createElement("h3");
+                trackAdd.textContent = "+";
+                trackAdd.onclick = () => handleAddClick(track.title, track.duration, album.id, album.title);
 
                 // Extract title and duration
                 const trackTitle = track.title || "Unknown Title";
-                const trackDuration = track.duration || "Unknown Duration";
+                const trackDuration = track.duration;
 
                 // Format and display the track details
-                trackItem.textContent = `${trackTitle} (${trackDuration})`;
+                trackName.textContent = `${trackTitle} ${trackDuration}`;
+                trackItem.appendChild(trackName);
+                trackItem.appendChild(trackAdd);
                 modalTracklist.appendChild(trackItem);
             });
         } else {
@@ -207,6 +293,33 @@
 
         // Show the modal
         modal.style.display = "flex";
+    }
+
+    async function handleAddClick(trackId, trackDuration, albumId, albumTitle) {
+        console.log('entered handleAddClick() with info:', trackId, trackDuration, albumId, albumTitle);
+
+        const addSong = document.getElementById('add-song');
+        const playlistList = document.createElement('ul');
+        
+
+        try {
+        // Send a POST request to the '/add-song' endpoint
+        const response = await fetch('/add-song', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ trackId, trackDuration, albumId, albumTitle}), // Pass the trackId in the request body
+        });
+
+        if (response.ok) {
+            console.log(`Successfully added track with ID: ${trackId}`);
+        } else {
+            console.error(`Failed to add track with ID: ${trackId}`);
+        }
+        } catch (error) {
+        console.error(`Error adding track with ID: ${trackId}:`, error);
+        }
     }
 
     function closeModal() {

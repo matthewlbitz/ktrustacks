@@ -39,7 +39,24 @@
 
         <div class="main-content">
             <div class="dashboard-content">
-                <h1>my favorites</h1><br>
+                <!--
+                <div class="playlist-header">
+                    <h1 class="playlist-title">my playlists</h1><h1 class="add-playlist" onclick="createPlaylist()">+</h1>
+                </div>
+                    <div id="playlist-list">
+                    
+                        <ul id="playlist-list-ul">
+                            <li id="create-playlist-modal" style="display: none">
+                                <form id="create-playlist-form" action="{{ url_for('create_playlist') }}" method="POST">
+                                    <input type="text" name="playlist-name" placeholder="playlist name" id="playlist-input-field"/>
+                                    <input type="submit" value="add" class="btn btn-login" id="playlist-create-btn"/>                
+                                </form>
+                            </li>
+                        
+                        </ul>
+                    </div>
+                -->
+                <h1 class="favorite-title" onclick="toggleFavorites()">my favorites</h1><br>
                 <div id="favorite-list">
                     <ul id="favorite-songs-list-ul">
                     </ul>
@@ -50,7 +67,146 @@
 
         </div>
         <script>
+            function createPlaylist() {
+                const playlist_form = document.getElementById('create-playlist-modal');
+                if (playlist_form.style.display == 'block') {
+                    pass;
+                } else {
+                    playlist_form.style.display = 'block';
+                }
+            }
+
+            document.getElementById('create-playlist-form').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent the default form submission (page reload)
+                
+                const playlistName = document.querySelector('input[name="playlist-name"]').value;
+                console.log('playlist name', playlistName);
+                if (playlistName.trim() === '') {
+                    alert('Please enter a playlist name.');
+                    return;
+                }
+
+                try {
+                    // Send the playlist name to the Flask endpoint using fetch
+                    const response = await fetch('/create-playlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json', // Specify JSON format
+                        },
+                        body: JSON.stringify({ playlist_name: playlistName }), // Send data as JSON
+                    });
+
+                    if (response.ok) {
+                        // If the request is successful, update the UI
+                        const playlistListUl = document.getElementById('playlist-list-ul');
+                        const newPlaylistItem = document.createElement('li');
+                        newPlaylistItem.textContent = playlistName;
+                        playlistListUl.appendChild(newPlaylistItem);
+
+                        // Hide the modal and reset the form
+                        document.getElementById('create-playlist-modal').style.display = 'none';
+                        //this.reset();
+                    } else {
+                        // Handle errors (e.g., server validation errors)
+                        const errorData = await response.json();
+                        alert(`Error: ${errorData.message}`);
+                    }
+                } catch (error) {
+                    // Handle network or other errors
+                    console.error('Error creating playlist:', error);
+                    alert('An error occurred while creating the playlist. Please try again.');
+                }
+            });
+            
+            document.addEventListener('DOMContentLoaded', async function () {
+                try {
+                    const response = await fetch('/get-playlists');
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        const playlistListUl = document.getElementById('playlist-list-ul');
+                        result.playlists.forEach(playlist => {
+                            const newPlaylistItem = document.createElement('li');
+                            newPlaylistItem.addEventListener('click', () => removePlaylist(playlist));
+                            newPlaylistItem.textContent = playlist.name;
+                            playlistListUl.appendChild(newPlaylistItem);
+                        });
+                    } else {
+                        console.log('Error fetching playlists:', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading playlists:', error);
+                }
+            });
+
+
+
             window.addEventListener("load", fetchSongs_favorite);
+
+            function toggleFavorites() {
+                console.log('entered hideFavorites()');
+                const list = document.getElementById('favorite-list');
+                if (list.style.display === 'none') {
+                    list.style.display = 'block';
+                } else {
+                    list.style.display = 'none';
+                }
+            }
+
+            function removePlaylist(playlist) {
+                console.log("entered removePlaylist", playlist);
+                const addButton = document.getElementById('addButton');
+                const playlistId = playlist.id;
+                console.log('heres the playlist id', playlistId);
+                //addButton.dataset.albumId = album.id;
+                //const albumId = addButton.dataset.albumId;
+                //addButton.innerText = 'added to favorites!'
+
+                if (!playlistId) {
+                    console.error('Playlist ID not found')
+                    return;
+                }
+
+                fetch('/remove-playlist', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ playlist_id: playlistId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('heres the data from removeplaylist');
+                    if (data.success) {
+                        console.log('heres the data for removesong', data);
+                        fetchPlaylists();
+                    } else {
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            function fetchPlaylists() {
+            console.log("entering fetchPlaylists")
+            fetch(`/get-playlists`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('heres the poop:', data)
+                    const playlistList = document.getElementById('playlist-list-ul');
+                    playlistList.innerHTML = '';  // Clear previous songs
+
+                    const playlistListUl = document.getElementById('playlist-list-ul');
+                        data.playlists.forEach(playlist => {
+                            const newPlaylistItem = document.createElement('li');
+                            newPlaylistItem.addEventListener('click', () => removePlaylist(playlist));
+                            newPlaylistItem.textContent = playlist.name;
+                            playlistListUl.appendChild(newPlaylistItem);
+                        });
+                    document.getElementById('playlist-list').style.display = 'block';
+                    
+                })
+                .catch(error => console.error('Error fetching playlists:', error));
+            }
 
             function fetchSongs_favorite() {
             console.log("entering fetchsongs_favorite")
