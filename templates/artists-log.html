@@ -157,10 +157,15 @@
             wrapper.innerHTML += `<button value=${page} class="page">${page}</button>`;
         }
 
-        if (state.page > 0 && state.page < pages + 1) {
-            wrapper.innerHTML = `<button value=${1} class="page">&#171 First</button>` + 
-            `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
-            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>` + `<button value=${pages} class="page">Last &#187;</button>`;
+        if (pages <= 5) {
+            wrapper.innerHTML = wrapper.innerHTML;
+        } else if (maxRight === pages) {
+            wrapper.innerHTML = `<button class="page">&#171 Previous</button>` + wrapper.innerHTML;
+        } else if (state.page === 1) {
+            wrapper.innerHTML += `<button value=${state.page + 1} class="page">Next &#187;</button>`
+        } else {
+            wrapper.innerHTML =  `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
+            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>`;
         }
 
         $('.page').on('click', function() {
@@ -267,10 +272,10 @@
 
                 // Extract title and duration
                 const trackTitle = track.title || "Unknown Title";
-                const trackDuration = track.duration || "Unknown Duration";
+                const trackDuration = track.duration;
 
                 // Format and display the track details
-                trackItem.textContent = `${trackTitle} (${trackDuration})`;
+                trackItem.textContent = ` - ${trackDuration} ${trackTitle}`;
                 modalTracklist.appendChild(trackItem);
             });
         } else {

@@ -165,10 +165,15 @@
             wrapper.innerHTML += `<button value=${page} class="page">${page}</button>`;
         }
 
-        if (state.page > 0 && state.page < pages + 1) {
-            wrapper.innerHTML = `<button value=${1} class="page">&#171 First</button>` + 
-            `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
-            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>` + `<button value=${pages} class="page">Last &#187;</button>`;
+        if (pages <= 5) {
+            wrapper.innerHTML = wrapper.innerHTML;
+        } else if (maxRight === pages) {
+            wrapper.innerHTML = `<button class="page">&#171 Previous</button>` + wrapper.innerHTML;
+        } else if (state.page === 1) {
+            wrapper.innerHTML += `<button value=${state.page + 1} class="page">Next &#187;</button>`
+        } else {
+            wrapper.innerHTML =  `<button value=${state.page - 1} class="page">&#171 Previous</button>` 
+            + wrapper.innerHTML + `<button value=${state.page + 1} class="page">Next &#187;</button>`;
         }
 
         $('.page').on('click', function() {
@@ -273,9 +278,7 @@
                 const trackName = document.createElement("li");
                 trackItem.classList.add("track-item");
                 trackName.classList.add("track-name");
-                const trackAdd = document.createElement("h3");
-                trackAdd.textContent = "+";
-                trackAdd.onclick = () => handleAddClick(track.title, track.duration, album.id, album.title);
+
 
                 // Extract title and duration
                 const trackTitle = track.title || "Unknown Title";
@@ -284,7 +287,6 @@
                 // Format and display the track details
                 trackName.textContent = `${trackTitle} ${trackDuration}`;
                 trackItem.appendChild(trackName);
-                trackItem.appendChild(trackAdd);
                 modalTracklist.appendChild(trackItem);
             });
         } else {
