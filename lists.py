@@ -11,7 +11,9 @@ decades = [
 ]
 
 genres = [
-    "Folk, World & Country",
+    "Folk",
+    "World",
+    "Country",
     "Blues",
     "Brass & Military",
     "Children",
