@@ -39,23 +39,20 @@
 
         <div class="main-content">
             <div class="dashboard-content">
-                <!--
+                
                 <div class="playlist-header">
-                    <h1 class="playlist-title">my playlists</h1><h1 class="add-playlist" onclick="createPlaylist()">+</h1>
                 </div>
                     <div id="playlist-list">
                     
                         <ul id="playlist-list-ul">
                             <li id="create-playlist-modal" style="display: none">
-                                <form id="create-playlist-form" action="{{ url_for('create_playlist') }}" method="POST">
-                                    <input type="text" name="playlist-name" placeholder="playlist name" id="playlist-input-field"/>
-                                    <input type="submit" value="add" class="btn btn-login" id="playlist-create-btn"/>                
+                                <form id="create-playlist-form" action="{{ url_for('create_playlist') }}" method="POST">          
                                 </form>
                             </li>
                         
                         </ul>
                     </div>
-                -->
+               
                 <h1 class="favorite-title" onclick="toggleFavorites()">my favorites</h1><br>
                 <div id="favorite-list">
                     <ul id="favorite-songs-list-ul">
