@@ -254,7 +254,7 @@ button[type="submit"] {
     text-align: center;
 }
 
-.dashboard-content h1.favorite-title {
+/* .dashboard-content h1.favorite-title {
     margin: 10px 4px 4px 4px;
     padding: 1px;
     font-weight: 550;
@@ -263,7 +263,7 @@ button[type="submit"] {
 .dashboard-content h1:hover {
     border: 1px solid goldenrod;
     border-radius: 5px;
-}
+} */
 
 .track-item {
     display: flex;
@@ -360,9 +360,11 @@ button[type="submit"] {
     padding: 20px;
 }
 
-.profile-content p {
+.profile-content p,
+.profile-content a {
     color: goldenrod;
     font-family:'Courier New', Courier, monospace;
+    font-weight: bold;
 }
 
 /* Card container styling */

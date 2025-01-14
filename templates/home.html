@@ -131,47 +131,70 @@
             });
 
             document.getElementById('album-locator').addEventListener('submit', async function (e) {
-              console.log('entered album-locator event listener');
-              e.preventDefault();
+                console.log('entered album-locator event listener');
+                e.preventDefault();
 
-              const albumId = document.getElementById('album-id').value;
-              console.log('albumId for locater:', albumId);
-              const response = await fetch('/album-locator', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({ id: albumId})
-              });
+                const albumId = document.getElementById('album-id').value;  // Get the album ID from the input field
+                console.log('albumId for locater:', albumId);
 
-              console.log('response:', response);
+                const response = await fetch('/album-locator', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({ id: albumId }),  // Send albumId to the server
+                });
 
-              if (response.ok) {
-                const data = await response.json();
-                const shelfLabel = data.shelf_label[0]['shelf_label'];
+                console.log('response:', response);
 
-                document.getElementById('shelf-label').textContent = `Shelf Label: ${shelfLabel}`;
-                console.log('shelf label:', shelfLabel);
-                const match = shelfLabel.match(/^v?.?(\d+)/);
-                if (match) {
-                  const stackNumber = match.slice(0, -1)
-                  console.log('stacksnumber:', stackNumber);
+                if (response.ok) {
+                  const data = await response.json();
+                  const shelfLabel = data.shelf_label[0]['shelf_label'];  // Assuming the response includes the shelf label
+                  console.log(shelfLabel);
 
-                  document.querySelectorAll('.stacks .highlight').forEach(e1 => {
-                    e1.classList.remove('highlight');
-                  });
+                  document.getElementById('shelf-label').textContent = `Shelf Label: ${shelfLabel}`;
+                  console.log('shelf label poop:', shelfLabel);
 
-                  const stackClass = shelfLabel.startsWith('v.') ? `v-col-${stackNumber}` : `col-${stackNumber}`;
-                  console.log('stack class:', stackClass);
-                  const stacks = document.querySelectorAll(`.${stackClass}`);
-                  stacks.forEach(stack => {
-                    stack.classList.add('highlight');
-                  }); 
+                  // Regex to check if the shelfLabel is prefixed with 'V.' (case insensitive)
+                  if (shelfLabel[0] === "V") {
+                    console.log("abcdefghj");
+                    const shelf = `v-col-${shelfLabel.slice(2)}`;
+                    const shelfClass = shelf.slice(0, -1);
+                    console.log(shelfClass);
+                    document.querySelectorAll('.stacks .highlight').forEach(el => {
+                      el.classList.remove('highlight');
+                    });
+
+                    const stacks = document.querySelectorAll(`.${shelfClass}`);
+                    stacks.forEach(stack => {
+                      stack.classList.add('highlight');
+                    });
+
+                  } else {
+                    console.log("hgjgjkgjhjg");
+                    const stackNumber = shelfLabel;  // The numeric part after 'V.' or 'V'
+                    const shelf = `col-${shelfLabel.slice(0, -1)}`;
+                    console.log('stack number:', stackNumber);
+
+                    // Clear previous highlights
+                    document.querySelectorAll('.stacks .highlight').forEach(el => {
+                      el.classList.remove('highlight');
+                    });
+
+                    // Determine the stack class based on whether 'V.' was in the shelf label
+                    const stackClass = stackNumber.slice(0, -1);
+                    console.log('stack class:', stackClass);
+
+                    // Find the stack element by class and highlight it
+                    const stacks = document.querySelectorAll(`.${shelf}`);
+                    stacks.forEach(stack => {
+                      stack.classList.add('highlight');
+                    });
+                  }
+                } else {
+                  document.getElementById('shelf-label').textContent = 'Album not found';  // If the album ID isn't found
                 }
-              } else {
-                document.getElementById('shelf-label').textContent = 'Album not found';
-              }
-            }) ;
+              });
             </script>
 
 {% endblock content %}

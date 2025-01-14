@@ -43,6 +43,9 @@
                 </div>
                 <div class="modal-right">
                     <p id="modal-album-shelf"></p>
+                    <p id="modal-album-year"></p>
+                    <p id="modal-album-genre"></p>
+                    <p id="modal-album-style"></p>
                     <ul id="modal-album-tracklist"></ul>
                 </div>
             </div>
@@ -225,11 +228,17 @@
         const modalTitle = document.getElementById("modal-album-title");
         const modalShelf = document.getElementById("modal-album-shelf");
         const modalTracklist = document.getElementById("modal-album-tracklist");
+        const modalStyle = document.getElementById("modal-album-style");
+        const modalGenre = document.getElementById("modal-album-genre");
+        const modalYear = document.getElementById("modal-album-year");
 
         // Set album data
         modalImage.src = album.image || "placeholder.jpg"; // Use placeholder if no image
         modalTitle.textContent = `${album.title} by ${album.artist}`;
-        modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
+        modalStyle.textContent = `Style: ${album.style || "Style Unknown"}`;
+        modalGenre.textContent = `Genre: ${album.genre || "Genre Unknown"}`;
+        modalShelf.textContent = `Shelf: ${album.shelf || "Shelf Unknown"}`;
+        modalYear.textContent = `Year: ${album.year || "Year Unknown"}`;
 
         // Clear previous tracklist
         modalTracklist.innerHTML = "";
