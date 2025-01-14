@@ -205,12 +205,12 @@
                 // Title and artist
                 const titleArtist = document.createElement('div');
                 titleArtist.classList.add('title-artist');
-                titleArtist.textContent = `${song.title} by ${song.artist}`;
+                titleArtist.textContent = `${song.shelf} | ${song.title} by ${song.artist}`;
 
                 // Genre and shelf info
                 const genreShelf = document.createElement('div');
                 genreShelf.classList.add('style-shelf');
-                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}, Shelf: ${song.shelf || 'N/A'}`;
+                genreShelf.textContent = `Genre: ${song.genre || 'N/A'}`;
 
                 // Append details to details container
                 details.appendChild(titleArtist);
