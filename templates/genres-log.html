@@ -38,7 +38,6 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
             <div class="modal-header">
-                <p id="addButton" onclick="addToFavorites()">Add to Favorites</p>
                 <h2 id="modal-album-title"></h2>
                 <p id="modal-album-artist"></p>
             </div>
@@ -48,19 +47,19 @@
                 </div>
                 <div class="modal-right">
                     <p id="modal-album-shelf"></p>
+                    <p id="modal-album-year"></p>
+                    <p id="modal-album-genre"></p>
+                    <p id="modal-album-style"></p>
                     <ul id="modal-album-tracklist"></ul>
                 </div>
             </div>
         </div>
     </div>
-    <div id="add-song">
-
-    </div>
 
 </div>
 
 <script>
-    window.addEventListener("load", fetchSongs_favorite);
+    //window.addEventListener("load", fetchSongs_favorite);
 
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -191,7 +190,7 @@
 
 
     function fetchSongs_genre(genre) {
-    console.log("entering fetchsongs")
+    console.log("entering fetchsongs with genre ", genre)
     fetch(`/genres/${genre}`)
         .then(response => response.json())
         .then(data => {
@@ -219,11 +218,11 @@
                 titleArtist.classList.add('title-artist');
                 titleArtist.textContent = `${song.shelf} | ${song.title} by ${song.artist}`;
 
-                //const addButton = document.getElementById('addButton');
+                const addButton = document.getElementById('addButton');
                 //addButton.dataset.albumId = album.id;
                 //addButton.innerText = "add to favorites"
 
-                //const albumId = document.getElementById('addButton');
+                const albumId = document.getElementById('addButton');
 
                 // Genre and shelf info
                 const genreShelf = document.createElement('div');
@@ -261,15 +260,21 @@
         const modalTitle = document.getElementById("modal-album-title");
         const modalShelf = document.getElementById("modal-album-shelf");
         const modalTracklist = document.getElementById("modal-album-tracklist");
+        const modalStyle = document.getElementById("modal-album-style");
+        const modalGenre = document.getElementById("modal-album-genre");
+        const modalYear = document.getElementById("modal-album-year");
 
         // Set album data
         modalImage.src = album.image;
         modalTitle.textContent = `${album.title} by ${album.artist}`;
-        modalShelf.textContent = `Shelf: ${album.shelf || "N/A"}`;
+        modalStyle.textContent = `Style: ${album.style || "Style Unknown"}`;
+        modalGenre.textContent = `Genre: ${album.genre || "Genre Unknown"}`;
+        modalShelf.textContent = `Shelf: ${album.shelf || "Shelf Unknown"}`;
+        modalYear.textContent = `Year: ${album.year || "Year Unknown"}`;
 
         const addButton = document.getElementById('addButton');
-        addButton.dataset.albumId = album.id;
-        addButton.innerText = "add to favorites"
+        //addButton.dataset.albumId = album.id;
+        //addButton.innerText = "add to favorites"
 
         // Clear previous tracklist
         modalTracklist.innerHTML = "";
@@ -288,7 +293,7 @@
                 const trackDuration = track.duration;
 
                 // Format and display the track details
-                trackName.textContent = `${trackTitle} ${trackDuration}`;
+                trackName.textContent = ` - ${trackDuration} ${trackTitle}`;
                 trackItem.appendChild(trackName);
                 modalTracklist.appendChild(trackItem);
             });

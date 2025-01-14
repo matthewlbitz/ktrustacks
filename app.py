@@ -180,7 +180,7 @@ def login():
         return redirect(url_for('homelog'))
     else:
         error = "Invalid username and/or password. Please try again."
-        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks, error=error)
+        return redirect(url_for('homelog', error=error))  # Pass error in query string
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -188,7 +188,8 @@ def register():
     password = request.form['password']
     user = User.query.filter_by(username=username).first()
     if user:
-        return render_template('home.html', genres=genres, decades=decades, styles=styles, artists=artists, stacks=stacks)
+        error = "Username already exists. Please choose a different username."
+        return redirect(url_for('homelog', error=error))  # Pass error in query string
     else:
         new_user = User(username=username)
         new_user.set_password(password)
@@ -196,6 +197,7 @@ def register():
         db.session.commit()
         session['username'] = username
         return redirect(url_for('homelog'))
+
 
 @app.route('/logout')
 def logout():
@@ -262,7 +264,8 @@ def get_favorite_songs():
 @app.route('/home-log')
 def homelog():
     if "username" in session:
-        return render_template('home-log.html', username=session["username"])
+        error = request.args.get('error')  # Get any error passed via query string
+        return render_template('home-log.html', username=session["username"], error=error)
     return redirect(url_for('main'))
 
 @app.route('/genres')
@@ -308,14 +311,14 @@ def decades_section_log():
 @app.route('/genres/<genre>')
 def genre_search(genre):
     results = Album.query.filter(Album.genre.like(f"%{genre}%")).all()
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     return jsonify({'songs': songs})
 
 @app.route('/styles/<style>')
 def style_search(style):
     results = Album.query.filter(Album.style.like(f"%{style}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -323,7 +326,7 @@ def style_search(style):
 def artist_search(artist):
     results = Album.query.filter(Album.artist.like(f"%{artist}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -331,7 +334,7 @@ def artist_search(artist):
 def stacks_search(stack):
     results = Album.query.filter(Album.shelf_label.like(f"%{stack}%")).all()
     print(results)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     print(songs)
     return jsonify({'songs': songs})
 
@@ -342,7 +345,7 @@ def decades_search(decade):
 
     results = Album.query.filter(Album.year >= start_year, Album.year <= end_year).all()
     print(start_year)
-    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style} for album in results]
+    songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     print(end_year)
     return jsonify({'songs': songs})
 
