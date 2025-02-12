@@ -332,7 +332,7 @@ def artist_search(artist):
 
 @app.route('/the-stacks/<stack>')
 def stacks_search(stack):
-    results = Album.query.filter(Album.shelf_label.like(f"%{stack}%")).all()
+    results = Album.query.filter(Album.shelf_label == stack).all()
     print(results)
     songs = [{'title': album.title, 'artist': album.artist, 'id': album.id, 'genre': album.genre, 'image': album.cover_image, 'shelf': album.shelf_label, 'tracklist': album.tracklist, 'style': album.style, 'year': album.year} for album in results]
     print(songs)
