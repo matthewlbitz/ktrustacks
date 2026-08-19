@@ -1,10 +1,12 @@
-from flask import Flask, request, render_template, jsonify, url_for, request, redirect, session
+import os
+
+from flask import Flask, request, render_template, jsonify, url_for, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from lists import genres, styles, stacks, artists, decades
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "poop"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../albums.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
